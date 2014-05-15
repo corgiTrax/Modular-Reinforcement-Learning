@@ -3,11 +3,11 @@
 import random
 import numpy
 
-
 def add(a,b):
   return a+b
     
-print(random.random())  
+print(random.random())
+print(random.randint(0,10))  
 
 
 

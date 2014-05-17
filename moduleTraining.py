@@ -88,7 +88,7 @@ def train_M1():
         #Start at random position
         learningAgent.setPos([random.choice(range(trainMaze.rows)),random.choice(range(trainMaze.columns))])
         #Initialize state
-        state = stateMapping_M1(learningAgent.pos,trainMaze.rewardPos)
+        state = stateMapping_M1(learningAgent.pos,trainMaze.rewards[0])
         stepCount = 0
         
         while (stepCount < MAX_STEP_EACH_EPISODE and state != [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
@@ -99,7 +99,7 @@ def train_M1():
             #After move, the object might be out of sight, or new object introduced to site, need to handle this.
             
 
-            stateNext = stateMapping_M1(learningAgent.pos,trainMaze.rewardPos)
+            stateNext = stateMapping_M1(learningAgent.pos,trainMaze.rewards[0])
             reward = calcReward_M1(stateNext)
             Qtable = updateQ_M1(Qtable,state,action,reward,stateNext)
             state = stateNext
@@ -115,11 +115,9 @@ def printPolicy_M1(Qtable):
         for j in range(testMaze.columns):
             state = stateMapping_M1([i,j],testMaze.rewards[0])
             action = mathtool.optimalActionSelect(Qtable,state,NUM_ACT)
-            testMaze.recordAction([i][j]
-               
-    
-    testMaze.printMap()
-    testMaze.printPathMap()
+            testMaze.recordAction([i,j],action)         
+    testMaze.printMap('original')
+    testMaze.printMap('path')
 
 
 #Module 2: obstacle avoidance
@@ -169,7 +167,7 @@ def train_M2():
         #Start at random position
         learningAgent.setPos([random.choice(range(trainMaze.rows)),random.choice(range(trainMaze.columns))])
         #Initialize state
-        state = stateMapping_M2(learningAgent.pos,trainMaze.obstaclePos)
+        state = stateMapping_M2(learningAgent.pos,trainMaze.obstacles[0])
         stepCount = 0
         
         while (stepCount < MAX_STEP_EACH_EPISODE and state != [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
@@ -179,7 +177,7 @@ def train_M2():
 
             #After move, the object might be out of sight, or new object introduced to site, need to handle this.
             
-            stateNext = stateMapping_M2(learningAgent.pos,trainMaze.obstaclePos)
+            stateNext = stateMapping_M2(learningAgent.pos,trainMaze.obstacles[0])
             reward = calcReward_M2(stateNext)
             Qtable = updateQ_M2(Qtable,state,action,reward,stateNext)
             state = stateNext
@@ -189,17 +187,4 @@ def train_M2():
     return Qtable
 
 #Check the final policy
-def printPolicy_M2(Qtable):
-    testMaze = world.Maze(VRANGE + 1,VRANGE + 1,'obstacle')
-    demoMaze = py_copy.deepcopy(testMaze)
-    for i in range(demoMaze.rows):
-        for j in range(demoMaze.columns):
-            state = stateMapping_M2([i,j],demoMaze.obstaclePos)
-            action = mathtool.optimalActionSelect(Qtable,state,NUM_ACT)
-            demoMaze.map[i][j] = action
-               
-    print('Original Maze Map')
-    testMaze.printMap()
-    print('Agent Policy Map')
-    demoMaze.printMap()
-        
+       

@@ -18,8 +18,6 @@ class Maze:
     def __init__(self,rows,columns, mazeType, pObstacle = 0.0, pReward = 0.0):
         self.rows = rows
         self.columns = columns
-        self.rewardPos = [0,0]
-        self.obstaclePos = [0,0]
         self.numReward = 0
         self.numObstacle = 0
         self.rewards = []#stores positions of rewards
@@ -33,11 +31,11 @@ class Maze:
         if (mazeType == 'reward'):#generate a maze with single reward
             pos = [random.randint(0,self.rows - 1),random.randint(0,self.columns - 1)]
             self.mazeMap[pos[0]][pos[1]] = Reward
-            self.rewardPos = pos
+            self.rewards.append(pos)
         if (mazeType == 'obstacle'):#generate a maze with single obstacle
             pos = [random.randint(0,self.rows - 1),random.randint(0,self.columns - 1)]
             self.mazeMap[pos[0]][pos[1]] = Obstacle
-            self.obstaclePos = pos
+            self.obstacles.append(pos)
         if (mazeType == 'test'):#generate a random map
             for i in range(rows):
                for j in range(columns):
@@ -64,7 +62,7 @@ class Maze:
 	    mapToPrint = self.pathMap
 	if (mapRequest == 'maze'):
 	    print('This is map after reward collection')
-	    mapToPrint = self.mazeMap)
+	    mapToPrint = self.mazeMap
         index = ' '
         for j in range(self.columns):
             index = index + ('%3s' % j)
@@ -79,13 +77,13 @@ class Maze:
                     mark = '-'#empty
                 elif (mapToPrint[i][j] == Obstacle):
                     mark = '@'#obstacle
-		elif (self.mapToPrint[i][j] == Up):
+		elif (mapToPrint[i][j] == Up):
                     mark = '^'
-                elif (self.mapToPrint[i][j] == Down):
+                elif (mapToPrint[i][j] == Down):
                     mark = 'v'
-                elif (self.mapToPrint[i][j] == Left):
+                elif (mapToPrint[i][j] == Left):
                     mark = '<'
-                elif (self.mapToPrint[i][j] == Right):
+                elif (mapToPrint[i][j] == Right):
                     mark = '>'
                 rowString =  rowString + ('%3s' % mark)
             print(rowString)

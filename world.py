@@ -26,31 +26,45 @@ class Maze:
         self.obstacles = []#stores positions of obstacles
         
         #represent maze map as a 2D array
-        self.map = [[0 for x in range(columns)] for x in range(rows)]
+        self.mazeMap = [[0 for x in range(columns)] for x in range(rows)]
         for i in range(rows):
             for j in range(columns):
-                self.map[i][j] = Empty
+                self.mazeMap[i][j] = Empty
         if (mazeType == 'reward'):#generate a maze with single reward
             pos = [random.randint(0,self.rows - 1),random.randint(0,self.columns - 1)]
-            self.map[pos[0]][pos[1]] = Reward
+            self.mazeMap[pos[0]][pos[1]] = Reward
             self.rewardPos = pos
         if (mazeType == 'obstacle'):#generate a maze with single obstacle
             pos = [random.randint(0,self.rows - 1),random.randint(0,self.columns - 1)]
-            self.map[pos[0]][pos[1]] = Obstacle
+            self.mazeMap[pos[0]][pos[1]] = Obstacle
             self.obstaclePos = pos
         if (mazeType == 'test'):#generate a random map
             for i in range(rows):
                for j in range(columns):
                     if (random.random() <= pReward):
-                        self.map[i][j] = Reward
+                        self.mazeMap[i][j] = Reward
                         self.numReward += 1
                         self.rewards.append([i,j])
                     elif (random.random() <= pObstacle):
-                        self.map[i][j] = Obstacle
+                        self.mazeMap[i][j] = Obstacle
                         self.numObstacle += 1
                         self.obstacles.append([i,j])
+	
+	#This map records agent path
+	self.pathMap = py_copy.deepcopy(self.mazeMap)
+	#This map keeps a backup of original map
+	self.originalMap = py_copy.deepcopy(self.mazeMap)
 
-    def printMap(self):
+    def printMap(self, mapRequest):
+	if (mapRequest == 'original'):
+	    print('This is original map')
+	    mapToPrint = self.originalMap
+	if (mapRequest == 'path'):
+	    print('This is navigation path')
+	    mapToPrint = self.pathMap
+	if (mapRequest == 'maze'):
+	    print('This is map after reward collection')
+	    mapToPrint = self.mazeMap)
         index = ' '
         for j in range(self.columns):
             index = index + ('%3s' % j)
@@ -59,41 +73,37 @@ class Maze:
             rowString = str(i)
             for j in range(self.columns):
                 mark = ''
-                if (self.map[i][j] == Reward):
+                if (mapToPrint[i][j] == Reward):
                     mark = '$'#reward
-                if (self.map[i][j] == Empty):
+                elif (mapToPrint[i][j] == Empty):
                     mark = '-'#empty
-                if (self.map[i][j] == Obstacle):
+                elif (mapToPrint[i][j] == Obstacle):
                     mark = '@'#obstacle
-                if (self.map[i][j] == Up):
+		elif (self.mapToPrint[i][j] == Up):
                     mark = '^'
-                if (self.map[i][j] == Down):
+                elif (self.mapToPrint[i][j] == Down):
                     mark = 'v'
-                if (self.map[i][j] == Left):
+                elif (self.mapToPrint[i][j] == Left):
                     mark = '<'
-                if (self.map[i][j] == Right):
+                elif (self.mapToPrint[i][j] == Right):
                     mark = '>'
                 rowString =  rowString + ('%3s' % mark)
             print(rowString)
 
-    #given agent position, calulate agent reward
+    #given agent position, calulate agent reward, if agent collects reward, remove it from mazeMap
+    #No need to deal with pathMap, since action will overwrite 
     def calc_reward(self,agentPos):
-        if (self.map[agentPos[ROW]][agentPos[COL]] == Reward):
+        if (self.mazeMap[agentPos[ROW]][agentPos[COL]] == Reward):
+	    self.mazeMap[agentPos[ROW]][agentPos[COL]] = Empty
 	    return R_REWARD
-	if (self.map[agentPos[ROW]][agentPos[COL]] == Obstacle):
+	if (self.mazeMap[agentPos[ROW]][agentPos[COL]] == Obstacle):
 	    return R_OBSTACLE
-	if (self.map[agentPos[ROW]][agentPos[COL]] == Empty):
+	if (self.mazeMap[agentPos[ROW]][agentPos[COL]] == Empty):
 	    return R_EMPTY
     
-    #Given agent position and action, record it in the map
+    #Given agent position and action, record it in the pathMap
     def recordAction(self,agentPos,action):
-        self.map[agentPos[ROW]][agentPos[COL]] = action
-
-    #update map, remove reward, if agent collect this
-    def updateMap(self,agentPos):
-        if (self.map[agentPos[ROW]][agentPos[COL]] == Reward):
-	    self.map[agentPos[ROW]][agentPos[COL]] = Empty
-
+        self.pathMap[agentPos[ROW]][agentPos[COL]] = action
 
 
 #Find nearby objects

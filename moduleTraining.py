@@ -111,17 +111,15 @@ def train_M1():
 #Check the final policy
 def printPolicy_M1(Qtable):
     testMaze = world.Maze(VRANGE + 1,VRANGE + 1,'reward')
-    demoMaze = py_copy.deepcopy(testMaze)
-    for i in range(demoMaze.rows):
-        for j in range(demoMaze.columns):
-            state = stateMapping_M1([i,j],demoMaze.rewardPos)
+    for i in range(testMaze.rows):
+        for j in range(testMaze.columns):
+            state = stateMapping_M1([i,j],testMaze.rewards[0])
             action = mathtool.optimalActionSelect(Qtable,state,NUM_ACT)
-            demoMaze.map[i][j] = action
+            testMaze.recordAction([i][j]
                
-    print('Original Maze Map')
+    
     testMaze.printMap()
-    print('Agent Policy Map')
-    demoMaze.printMap()
+    testMaze.printPathMap()
 
 
 #Module 2: obstacle avoidance

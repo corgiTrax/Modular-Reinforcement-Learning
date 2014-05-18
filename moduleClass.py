@@ -13,7 +13,7 @@ from config import *
 #1. How much is the expected reward (signaled by learned value, related to reward when training)
 #2. at this state, indifference level on actions?
 def calc_weight(Qtable, state):
-    Qvalues = (Qtable[state[ROW]][state[COL]])
+    Qvalues = Qtable[state[0]][state[1]]
     #standard deviation, for discrete states
     return mathtool.calc_sd(Qvalues)
 

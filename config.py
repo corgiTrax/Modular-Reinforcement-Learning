@@ -17,7 +17,7 @@ MAX_ROW = VRANGE * 2 + 1
 MAX_COL = VRANGE * 2 + 1
 
 #Q learning parameters for both modules
-NUM_EPISODE = 3000
+NUM_EPISODE = 500
 MAX_STEP_EACH_EPISODE = 50
 
 #Rewards for modules

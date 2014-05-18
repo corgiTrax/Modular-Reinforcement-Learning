@@ -92,6 +92,7 @@ class Maze:
     #No need to deal with pathMap, since action will overwrite 
     def calc_reward(self,agentPos):
         if (self.mazeMap[agentPos[ROW]][agentPos[COL]] == Reward):
+	    #This line removes rewards
 	    self.mazeMap[agentPos[ROW]][agentPos[COL]] = Empty
 	    return R_REWARD
 	if (self.mazeMap[agentPos[ROW]][agentPos[COL]] == Obstacle):

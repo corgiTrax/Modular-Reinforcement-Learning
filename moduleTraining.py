@@ -53,8 +53,8 @@ def calcReward_M1(state):
 #State Mapping function: map real world state into module state
 #T: no wall yet ????
 def stateMapping_M1(agentPos, objPos):
-    offsetROW = math.floor(MAX_ROW/2)
-    offsetCOL = math.floor(MAX_COL/2)
+    offsetROW = int(math.floor(MAX_ROW/2))
+    offsetCOL = int(math.floor(MAX_COL/2))
     state = [objPos[0] - agentPos[0] + offsetROW,objPos[1] - agentPos[1] + offsetCOL]
     return state
 
@@ -133,8 +133,8 @@ def calcReward_M2(state):
 #State Mapping function: map real world state into module state
 #T: no wall yet ????
 def stateMapping_M2(agentPos, objPos):
-    offsetROW = math.floor(MAX_ROW/2)
-    offsetCOL = math.floor(MAX_COL/2)
+    offsetROW = int(math.floor(MAX_ROW/2))
+    offsetCOL = int(math.floor(MAX_COL/2))
     state = [objPos[0] - agentPos[0] + offsetROW,objPos[1] - agentPos[1] + offsetCOL]
     return state
 
@@ -187,4 +187,14 @@ def train_M2():
     return Qtable
 
 #Check the final policy
-       
+def printPolicy_M2(Qtable):
+    testMaze = world.Maze(VRANGE + 1,VRANGE + 1,'obstacle')
+    for i in range(testMaze.rows):
+        for j in range(testMaze.columns):
+            state = stateMapping_M1([i,j],testMaze.obstacles[0])
+            action = mathtool.optimalActionSelect(Qtable,state,NUM_ACT)
+            testMaze.recordAction([i,j],action)         
+    testMaze.printMap('original')
+    testMaze.printMap('path')
+
+      

@@ -59,11 +59,12 @@ def stateMapping_M1(agentPos, objPos):
     return state
 
 #Q learnig update
-def updateQ_M1(Qtable,state,action,reward,stateNext):
+def updateQ_M1(Qtable,state,action,reward,stateNext,actionNext):
     #Discount factor
     Gamma = 0.7
     Alpha = 0.75
-    actionNext = mathtool.optimalActionSelect(Qtable,stateNext,NUM_ACT)
+    #This is for Q learning update
+    #actionNext = mathtool.optimalActionSelect(Qtable,stateNext,NUM_ACT)
     temp = Alpha * (reward + Gamma * Qtable[stateNext[0]][stateNext[1]][actionNext] - Qtable[state[0]][state[1]][action])
     Qtable[state[0]][state[1]][action] += temp
     return Qtable
@@ -89,20 +90,18 @@ def train_M1():
         learningAgent.setPos([random.choice(range(trainMaze.rows)),random.choice(range(trainMaze.columns))])
         #Initialize state
         state = stateMapping_M1(learningAgent.pos,trainMaze.rewards[0])
+        action = mathtool.eGreedyActionSelect(Qtable,state,NUM_ACT,epsilon)
         stepCount = 0
         
         while (stepCount < MAX_STEP_EACH_EPISODE and state != [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
 
-            action = mathtool.eGreedyActionSelect(Qtable,state,NUM_ACT,epsilon)
             learningAgent.move(action,trainMaze)
-
-            #After move, the object might be out of sight, or new object introduced to site, need to handle this.
-            
-
             stateNext = stateMapping_M1(learningAgent.pos,trainMaze.rewards[0])
+	    actionNext = mathtool.eGreedyActionSelect(Qtable,stateNext,NUM_ACT,epsilon)
             reward = calcReward_M1(stateNext)
-            Qtable = updateQ_M1(Qtable,state,action,reward,stateNext)
+            Qtable = updateQ_M1(Qtable,state,action,reward,stateNext,actionNext)
             state = stateNext
+            action = actionNext
             stepCount += 1
 
     print('M1 Training Complete')
@@ -114,7 +113,8 @@ def printPolicy_M1(Qtable):
     for i in range(testMaze.rows):
         for j in range(testMaze.columns):
             state = stateMapping_M1([i,j],testMaze.rewards[0])
-            action = mathtool.optimalActionSelect(Qtable,state,NUM_ACT)
+            #print(i,j,state,Qtable[state[0]][state[1]])
+	    action = mathtool.optimalActionSelect(Qtable,state,NUM_ACT)
             testMaze.recordAction([i,j],action)         
     testMaze.printMap('original')
     testMaze.printMap('path')
@@ -139,11 +139,12 @@ def stateMapping_M2(agentPos, objPos):
     return state
 
 #Q learnig update
-def updateQ_M2(Qtable,state,action,reward,stateNext):
+def updateQ_M2(Qtable,state,action,reward,stateNext,actionNext):
     #Discount factor
     Gamma = 0.7
     Alpha = 0.75
-    actionNext = mathtool.optimalActionSelect(Qtable,stateNext,NUM_ACT)
+    #This is Q learning update rule
+    #actionNext = mathtool.optimalActionSelect(Qtable,stateNext,NUM_ACT)
     temp = Alpha * (reward + Gamma * Qtable[stateNext[0]][stateNext[1]][actionNext] - Qtable[state[0]][state[1]][action])
     Qtable[state[0]][state[1]][action] += temp
     return Qtable
@@ -168,19 +169,19 @@ def train_M2():
         learningAgent.setPos([random.choice(range(trainMaze.rows)),random.choice(range(trainMaze.columns))])
         #Initialize state
         state = stateMapping_M2(learningAgent.pos,trainMaze.obstacles[0])
+	action = mathtool.eGreedyActionSelect(Qtable,state,NUM_ACT,epsilon)
         stepCount = 0
         
-        while (stepCount < MAX_STEP_EACH_EPISODE and state != [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
-
-            action = mathtool.eGreedyActionSelect(Qtable,state,NUM_ACT,epsilon)
+        while (stepCount < MAX_STEP_EACH_EPISODE): #and state != [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
+           
             learningAgent.move(action,trainMaze)
 
-            #After move, the object might be out of sight, or new object introduced to site, need to handle this.
-            
             stateNext = stateMapping_M2(learningAgent.pos,trainMaze.obstacles[0])
+	    actionNext = mathtool.eGreedyActionSelect(Qtable,stateNext,NUM_ACT,epsilon)
             reward = calcReward_M2(stateNext)
-            Qtable = updateQ_M2(Qtable,state,action,reward,stateNext)
+            Qtable = updateQ_M2(Qtable,state,action,reward,stateNext,actionNext)
             state = stateNext
+	    action = actionNext
             stepCount += 1
 
     print('M2 Training Complete')

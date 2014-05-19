@@ -5,6 +5,7 @@
 
 import random
 import mathtool
+import numpy
 import copy as py_copy
 from config import *
 
@@ -33,12 +34,13 @@ def decideAct(scoreCount):
     for i in range(len(scoreCount)):
         if (scoreCount[i] > score):
 	    act = i
+	    score = scoreCount[i]
     return act   
 
 
 #Class module
 class Module:
-    def __init__(self,state,Qtable):
+    def __init__(self,Qtable,state):
         self.state = state
         self.Qtable = Qtable
         self.weight = calc_weight(Qtable,state)

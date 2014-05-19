@@ -18,8 +18,6 @@ class Maze:
     def __init__(self,rows,columns, mazeType, pObstacle = 0.0, pReward = 0.0):
         self.rows = rows
         self.columns = columns
-        self.numReward = 0
-        self.numObstacle = 0
         self.rewards = []#stores positions of rewards
         self.obstacles = []#stores positions of obstacles
         
@@ -41,11 +39,9 @@ class Maze:
                for j in range(columns):
                     if (random.random() <= pReward):
                         self.mazeMap[i][j] = Reward
-                        self.numReward += 1
                         self.rewards.append([i,j])
                     elif (random.random() <= pObstacle):
                         self.mazeMap[i][j] = Obstacle
-                        self.numObstacle += 1
                         self.obstacles.append([i,j])
 	
 	#This map records agent path
@@ -92,7 +88,8 @@ class Maze:
     #No need to deal with pathMap, since action will overwrite 
     def calc_reward(self,agentPos):
         if (self.mazeMap[agentPos[ROW]][agentPos[COL]] == Reward):
-	    #This line removes rewards
+	    #These 2 lines removes rewards
+	    if (agentPos in self.rewards): self.rewards.remove(agentPos)
 	    self.mazeMap[agentPos[ROW]][agentPos[COL]] = Empty
 	    return R_REWARD
 	if (self.mazeMap[agentPos[ROW]][agentPos[COL]] == Obstacle):
@@ -110,7 +107,7 @@ def findNearbyObj(objType, agentPos, agentVRange, maze):
     visibleRange = agentPos[0]
     objList = []
     if (objType == 'reward'):
-        for i in range(maze.numReward):
+        for i in range(len(maze.rewards)):
             curRewardPos = maze.rewards[i]
             rowDist = abs(agentPos[0] - curRewardPos[0])
             colDist = abs(agentPos[1] - curRewardPos[1])
@@ -119,7 +116,7 @@ def findNearbyObj(objType, agentPos, agentVRange, maze):
                 objList.append(obj)
 
     if (objType == 'obstacle'):
-        for i in range(maze.numObstacle):
+        for i in range(len(maze.obstacles)):
             curRewardPos = maze.obstacles[i]
             rowDist = abs(agentPos[0] - curRewardPos[0])
             colDist = abs(agentPos[1] - curRewardPos[1])

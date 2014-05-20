@@ -9,20 +9,19 @@ import moduleTraining
 import copy as py_copy
 from config import *
 
-#Train a Qtable for module 1
-QtableM1 = moduleTraining.train_M1()
-moduleTraining.printPolicy_M1(QtableM1)
-##Train a Qtable for module 2
-QtableM2 = moduleTraining.train_M2()
-moduleTraining.printPolicy_M2(QtableM2)
+#Read a Qtable for module 1
+QtableM1 = moduleTraining.readQFromFile('Q1.txt')
+moduleTraining.printPolicy_M1(QtableM1,[2,2])
+#Read a Qtable for module 2
+QtableM2 = moduleTraining.readQFromFile('Q2.txt')
+moduleTraining.printPolicy_M2(QtableM2,[2,2])
 
 
 #Combined Navigation
-testMaze = world.Maze(10,10,'test',0.2,0.4)
+testMaze = world.Maze(TESTR,TESTC,'test')
 myAgent = moduleTraining.Agent([0,0])
 
 stepCount = 0
-MAX_STEP = 100
 while (stepCount < MAX_STEP): 
     #Detect all rewards within range, get their positions
     rewardsNear = world.findNearbyObj('reward',myAgent.pos,VRANGE,testMaze)
@@ -48,17 +47,15 @@ while (stepCount < MAX_STEP):
     allModules = rewardModules + obstacleModules    
     scores = moduleClass.vote(allModules)
     action = moduleClass.decideAct(scores)
-    for i in range(len(allModules)):
-	print(stepCount,'module',i,'state',allModules[i].state,'action',allModules[i].optimalAct,'weight',allModules[i].weight)
-    print(scores,action)
+    #for i in range(len(allModules)):
+	#print(stepCount,'module',i,'state',allModules[i].state,'action',allModules[i].optimalAct,'weight',allModules[i].weight)
+    #print(scores,action)
 
     #mark action at this position
     testMaze.recordAction(myAgent.pos,action)
     #agent takes action, and compute reward
     myAgent.move(action,testMaze)
     myAgent.cumReward += testMaze.calc_reward(myAgent.pos)
-
-   
 
     stepCount +=1
 
@@ -67,9 +64,9 @@ testMaze.printMap('original')
 testMaze.printMap('path')
 testMaze.printMap('maze')
 print('totla reward:',myAgent.cumReward)
-#
-#
-#    
+
+
+    
 ########################## Repository ######################
 #
 #

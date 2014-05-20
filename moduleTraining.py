@@ -23,7 +23,7 @@ from config import *
 #Agent class
 class Agent:
     def __init__(self,initPos):
-        self.pos = initPos
+        self.pos = py_copy.deepcopy(initPos)
 	self.cumReward = 0
 
     def setPos(self, position):
@@ -61,8 +61,8 @@ def stateMapping_M1(agentPos, objPos):
 #Q learnig update
 def updateQ_M1(Qtable,state,action,reward,stateNext,actionNext):
     #Discount factor
-    Gamma = 0.7
-    Alpha = 0.75
+    Gamma = 0.9
+    Alpha = 0.6
     #This is for Q learning update
     #actionNext = mathtool.optimalActionSelect(Qtable,stateNext,NUM_ACT)
     temp = Alpha * (reward + Gamma * Qtable[stateNext[0]][stateNext[1]][actionNext] - Qtable[state[0]][state[1]][action])
@@ -71,49 +71,57 @@ def updateQ_M1(Qtable,state,action,reward,stateNext,actionNext):
 
 
 #Training Process
-#Each episode consists of a small maze of size MAX_ROW*MAX_COL,
-#with 1 reward placed randomly ***
 #Episode is terminated with max_steps or reward collected
 def train_M1():
     #Q table initialization
     Qtable = numpy.zeros((MAX_ROW,MAX_COL,NUM_ACT))
 
     #agent initialization
-    learningAgent = Agent([0,0])
-
-    epsilon = 0.9
     
-    for episode in range(NUM_EPISODE):
-        #Generate a maze of MAX_ROW * MAX_COL
-        trainMaze = world.Maze(VRANGE + 1,VRANGE + 1,'reward')
-        #Start at random position
-        learningAgent.setPos([random.choice(range(trainMaze.rows)),random.choice(range(trainMaze.columns))])
-        #Initialize state
-        state = stateMapping_M1(learningAgent.pos,trainMaze.rewards[0])
-        action = mathtool.eGreedyActionSelect(Qtable,state,NUM_ACT,epsilon)
-        stepCount = 0
-        
-        while (stepCount < MAX_STEP_EACH_EPISODE and state != [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
+    #We partition state space into 4 subspaces(quaters), agent should be placed at 4 loctions
+    agentPosSet = [[TMAZE_SIZE - 1,TMAZE_SIZE - 1],[0,TMAZE_SIZE - 1],[TMAZE_SIZE - 1,0],[0,0]]
+    #set of object positions (every position in the quater)
+    objPosSet = []
+    for i in range(TMAZE_SIZE):
+	for j in range(TMAZE_SIZE):
+	    objPosSet.append([i,j])
 
-            learningAgent.move(action,trainMaze)
-            stateNext = stateMapping_M1(learningAgent.pos,trainMaze.rewards[0])
-	    actionNext = mathtool.eGreedyActionSelect(Qtable,stateNext,NUM_ACT,epsilon)
-            reward = calcReward_M1(stateNext)
-            Qtable = updateQ_M1(Qtable,state,action,reward,stateNext,actionNext)
-            state = stateNext
-            action = actionNext
-            stepCount += 1
+    for agentPos in agentPosSet:
+	for objPos in objPosSet:
+	    #Train agent in current agentPos,objPos for several episodes
+	    for episode in range(NUM_EPISODE):
+		 
+		#Generate a maze, place object 
+            	trainMaze = world.Maze(TMAZE_SIZE,TMAZE_SIZE,'reward',objPos)
+
+		#Start agent at fixed position
+		learningAgent = Agent(agentPos)
+
+            	#Initialize state, action
+                state = stateMapping_M1(learningAgent.pos,trainMaze.rewards[0])
+                action = mathtool.eGreedyActionSelect(Qtable,state,NUM_ACT,EPSILON)
+                stepCount = 0
+        
+                while (stepCount < MAX_STEP_EACH_EPISODE and state != [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
+
+            	    learningAgent.move(action,trainMaze)
+            	    stateNext = stateMapping_M1(learningAgent.pos,trainMaze.rewards[0])
+	    	    actionNext = mathtool.eGreedyActionSelect(Qtable,stateNext,NUM_ACT,EPSILON)
+            	    reward = calcReward_M1(stateNext)
+            	    Qtable = updateQ_M1(Qtable,state,action,reward,stateNext,actionNext)
+            	    state = stateNext
+            	    action = actionNext
+            	    stepCount += 1
 
     print('M1 Training Complete')
     return Qtable
 
 #Check the final policy
-def printPolicy_M1(Qtable):
-    testMaze = world.Maze(VRANGE + 1,VRANGE + 1,'reward')
+def printPolicy_M1(Qtable,objPos):
+    testMaze = world.Maze(TMAZE_SIZE,TMAZE_SIZE,'reward',objPos)
     for i in range(testMaze.rows):
         for j in range(testMaze.columns):
             state = stateMapping_M1([i,j],testMaze.rewards[0])
-            #print(i,j,state,Qtable[state[0]][state[1]])
 	    action = mathtool.optimalActionSelect(Qtable,state,NUM_ACT)
             testMaze.recordAction([i,j],action)         
     testMaze.printMap('original')
@@ -128,7 +136,7 @@ def calcReward_M2(state):
     if (state == [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
         reward = R_OBSTACLE
     else:
-        reward = 0
+        reward = -1
     return reward
 #State Mapping function: map real world state into module state
 #T: no wall yet ????
@@ -141,8 +149,8 @@ def stateMapping_M2(agentPos, objPos):
 #Q learnig update
 def updateQ_M2(Qtable,state,action,reward,stateNext,actionNext):
     #Discount factor
-    Gamma = 0.7
-    Alpha = 0.75
+    Gamma = 0.9
+    Alpha = 0.6
     #This is Q learning update rule
     #actionNext = mathtool.optimalActionSelect(Qtable,stateNext,NUM_ACT)
     temp = Alpha * (reward + Gamma * Qtable[stateNext[0]][stateNext[1]][actionNext] - Qtable[state[0]][state[1]][action])
@@ -150,46 +158,54 @@ def updateQ_M2(Qtable,state,action,reward,stateNext,actionNext):
     return Qtable
 
 #Training Process
-#Each episode consists of a small maze of size MAX_ROW * MAX_COL,
-#with 1 reward placed randomly ***
-#Episode is terminated with max_steps or reward collected
+#Episode is terminated with max_steps or obstacle hit
 def train_M2():
     #Q table initialization
     Qtable = numpy.zeros((MAX_ROW,MAX_COL,NUM_ACT))
 
     #agent initialization
-    learningAgent = Agent([0,0])
-
-    epsilon = 0.9
     
-    for episode in range(NUM_EPISODE):
-        #Generate a maze of MAX_ROW * MAX_COL
-        trainMaze = world.Maze(VRANGE + 1,VRANGE + 1,'obstacle')
-        #Start at random position
-        learningAgent.setPos([random.choice(range(trainMaze.rows)),random.choice(range(trainMaze.columns))])
-        #Initialize state
-        state = stateMapping_M2(learningAgent.pos,trainMaze.obstacles[0])
-	action = mathtool.eGreedyActionSelect(Qtable,state,NUM_ACT,epsilon)
-        stepCount = 0
-        
-        while (stepCount < MAX_STEP_EACH_EPISODE): #and state != [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
-           
-            learningAgent.move(action,trainMaze)
+    #We partition state space into 4 subspaces(quaters), agent should be placed at 4 loctions
+    agentPosSet = [[TMAZE_SIZE - 1,TMAZE_SIZE - 1],[0,TMAZE_SIZE - 1],[TMAZE_SIZE - 1,0],[0,0]]
+    #set of object positions (every position in the quater)
+    objPosSet = []
+    for i in range(TMAZE_SIZE):
+	for j in range(TMAZE_SIZE):
+	    objPosSet.append([i,j])
 
-            stateNext = stateMapping_M2(learningAgent.pos,trainMaze.obstacles[0])
-	    actionNext = mathtool.eGreedyActionSelect(Qtable,stateNext,NUM_ACT,epsilon)
-            reward = calcReward_M2(stateNext)
-            Qtable = updateQ_M2(Qtable,state,action,reward,stateNext,actionNext)
-            state = stateNext
-	    action = actionNext
-            stepCount += 1
+    for agentPos in agentPosSet:
+	for objPos in objPosSet:
+	    #Train agent in current agentPos,objPos for several episodes
+	    for episode in range(NUM_EPISODE):
+		 
+		#Generate a maze, place object 
+            	trainMaze = world.Maze(TMAZE_SIZE,TMAZE_SIZE,'obstacle',objPos)
+
+		#Start agent at fixed position
+		learningAgent = Agent(agentPos)
+
+            	#Initialize state, action
+                state = stateMapping_M2(learningAgent.pos,trainMaze.obstacles[0])
+                action = mathtool.eGreedyActionSelect(Qtable,state,NUM_ACT,EPSILON)
+                stepCount = 0
+        
+                while (stepCount < MAX_STEP_EACH_EPISODE):# and state != [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
+
+            	    learningAgent.move(action,trainMaze)
+            	    stateNext = stateMapping_M2(learningAgent.pos,trainMaze.obstacles[0])
+	    	    actionNext = mathtool.eGreedyActionSelect(Qtable,stateNext,NUM_ACT,EPSILON)
+            	    reward = calcReward_M2(stateNext)
+            	    Qtable = updateQ_M2(Qtable,state,action,reward,stateNext,actionNext)
+            	    state = stateNext
+            	    action = actionNext
+            	    stepCount += 1
 
     print('M2 Training Complete')
     return Qtable
 
 #Check the final policy
-def printPolicy_M2(Qtable):
-    testMaze = world.Maze(VRANGE + 1,VRANGE + 1,'obstacle')
+def printPolicy_M2(Qtable,objPos):
+    testMaze = world.Maze(TMAZE_SIZE,TMAZE_SIZE,'obstacle',objPos)
     for i in range(testMaze.rows):
         for j in range(testMaze.columns):
             state = stateMapping_M1([i,j],testMaze.obstacles[0])
@@ -198,4 +214,28 @@ def printPolicy_M2(Qtable):
     testMaze.printMap('original')
     testMaze.printMap('path')
 
+
+#Train and store the Qtables for both modules
+def writeQToFile(Qtable,filename):
+    myFile = open(filename,'w')
+    for i in range (len(Qtable)):
+	for j in range(len(Qtable[i])):
+	    for k in range(len(Qtable[i][j])):
+		myFile.write(str(Qtable[i][j][k]))
+		myFile.write('\n')
+
+
+def readQFromFile(filename):
+    Qtable = numpy.zeros((MAX_ROW,MAX_COL,NUM_ACT))
+    myFile = open(filename,'r')
+    for i in range (len(Qtable)):
+	for j in range(len(Qtable[i])):
+	    for k in range(len(Qtable[i][j])):
+	        Qtable[i][j][k] = float(myFile.readline())
+    return Qtable
+
+#QtableM1 = train_M1()
+#QtableM2 = train_M2()
+#writeQToFile(QtableM1,'Q1.txt')
+#writeQToFile(QtableM2,'Q2.txt')
       

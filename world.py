@@ -15,25 +15,24 @@ Reward = 255
 Empty = 254
 
 class Maze:
-    def __init__(self,rows,columns, mazeType, pObstacle = 0.0, pReward = 0.0):
-        self.rows = rows
-        self.columns = columns
+    def __init__(self,rows,columns, mazeType, objPos = [0,0]):
+        self.rows = py_copy.deepcopy(rows)
+        self.columns = py_copy.deepcopy(columns)
         self.rewards = []#stores positions of rewards
         self.obstacles = []#stores positions of obstacles
-        
+        self.objectPos = py_copy.deepcopy(objPos)
+ 
         #represent maze map as a 2D array
         self.mazeMap = [[0 for x in range(columns)] for x in range(rows)]
         for i in range(rows):
             for j in range(columns):
                 self.mazeMap[i][j] = Empty
         if (mazeType == 'reward'):#generate a maze with single reward
-            pos = [random.randint(0,self.rows - 1),random.randint(0,self.columns - 1)]
-            self.mazeMap[pos[0]][pos[1]] = Reward
-            self.rewards.append(pos)
+            self.mazeMap[self.objectPos[0]][self.objectPos[1]] = Reward
+            self.rewards.append(self.objectPos)
         if (mazeType == 'obstacle'):#generate a maze with single obstacle
-            pos = [random.randint(0,self.rows - 1),random.randint(0,self.columns - 1)]
-            self.mazeMap[pos[0]][pos[1]] = Obstacle
-            self.obstacles.append(pos)
+            self.mazeMap[self.objectPos[0]][self.objectPos[1]] = Obstacle
+            self.obstacles.append(self.objectPos)
         if (mazeType == 'test'):#generate a random map
             for i in range(rows):
                for j in range(columns):

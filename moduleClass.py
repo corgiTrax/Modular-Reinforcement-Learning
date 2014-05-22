@@ -24,11 +24,11 @@ def vote(modules):
     #Count the total weight of all actions
     scoreCount = numpy.zeros(NUM_ACT)
     for i in range(len(modules)):
-	#state = modules[i].state
-	#Qvalues = modules[i].Qtable[state[0]][state[1]]
-	#for act in range(NUM_ACT):
-            #scoreCount[act] += Qvalues[act]
-	scoreCount[modules[i].optimalAct] += modules[i].weight
+	state = modules[i].state
+	Qvalues = modules[i].Qtable[state[0]][state[1]]
+	for act in range(NUM_ACT):
+            scoreCount[act] += Qvalues[act]
+	#scoreCount[modules[i].optimalAct] += modules[i].weight
     return scoreCount
 
 #Find action with highest accumulated weight

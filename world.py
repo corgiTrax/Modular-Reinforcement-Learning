@@ -98,7 +98,8 @@ class Maze:
     
     #Given agent position and action, record it in the pathMap
     def recordAction(self,agentPos,action):
-        self.pathMap[agentPos[ROW]][agentPos[COL]] = action
+        self.pathMap = py_copy.deepcopy(self.mazeMap)
+	self.pathMap[agentPos[ROW]][agentPos[COL]] = action
 
 
 #Find nearby objects

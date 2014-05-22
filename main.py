@@ -11,10 +11,10 @@ from config import *
 
 #Read a Qtable for module 1
 QtableM1 = moduleTraining.readQFromFile('Q1.txt')
-moduleTraining.printPolicy_M1(QtableM1,[2,2])
+#moduleTraining.printPolicy_M1(QtableM1,[2,2])
 #Read a Qtable for module 2
 QtableM2 = moduleTraining.readQFromFile('Q2.txt')
-moduleTraining.printPolicy_M2(QtableM2,[2,2])
+#moduleTraining.printPolicy_M2(QtableM2,[2,2])
 
 
 #Combined Navigation
@@ -58,12 +58,14 @@ while (stepCount < MAX_STEP):
     myAgent.cumReward += testMaze.calc_reward(myAgent.pos)
 
     stepCount +=1
+    print('step:',stepCount)
+    testMaze.printMap('path')
 
 #Print final results
-testMaze.printMap('original')
-testMaze.printMap('path')
-testMaze.printMap('maze')
-print('totla reward:',myAgent.cumReward)
+#testMaze.printMap('original')
+#testMaze.printMap('path')
+#testMaze.printMap('maze')
+#print('totla reward:',myAgent.cumReward)
 
 
     

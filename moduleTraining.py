@@ -61,7 +61,7 @@ def stateMapping_M1(agentPos, objPos):
 #Q learnig update
 def updateQ_M1(Qtable,state,action,reward,stateNext,actionNext):
     #Discount factor
-    Gamma = 0.9
+    Gamma = GAMMA_M1
     Alpha = 0.6
     #This is for Q learning update
     #actionNext = mathtool.optimalActionSelect(Qtable,stateNext,NUM_ACT)
@@ -136,7 +136,7 @@ def calcReward_M2(state):
     if (state == [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
         reward = R_OBSTACLE
     else:
-        reward = -1
+        reward = 0
     return reward
 #State Mapping function: map real world state into module state
 #T: no wall yet ????
@@ -149,7 +149,7 @@ def stateMapping_M2(agentPos, objPos):
 #Q learnig update
 def updateQ_M2(Qtable,state,action,reward,stateNext,actionNext):
     #Discount factor
-    Gamma = 0.9
+    Gamma = GAMMA_M2
     Alpha = 0.6
     #This is Q learning update rule
     #actionNext = mathtool.optimalActionSelect(Qtable,stateNext,NUM_ACT)
@@ -189,7 +189,7 @@ def train_M2():
                 action = mathtool.eGreedyActionSelect(Qtable,state,NUM_ACT,EPSILON)
                 stepCount = 0
         
-                while (stepCount < MAX_STEP_EACH_EPISODE):# and state != [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
+                while (stepCount < MAX_STEP_EACH_EPISODE and state != [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
 
             	    learningAgent.move(action,trainMaze)
             	    stateNext = stateMapping_M2(learningAgent.pos,trainMaze.obstacles[0])

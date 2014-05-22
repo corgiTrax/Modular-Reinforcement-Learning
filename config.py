@@ -30,14 +30,16 @@ EPSILON = 0.9
 R_REWARD = 10
 R_OBSTACLE = -10 
 R_EMPTY = 0
+GAMMA_M1 = 0.5
+GAMMA_M2 = 0.5
 
 #main.py
 #Obstacle and price probabilities
-pObstacle = 0.1
-pReward = 0.2
+pObstacle = 0.4
+pReward = 0.5
 
 #Test Maze size
-TESTR = 6
-TESTC = 6
-MAX_STEP = 30
+TESTR = 8
+TESTC = 8
+MAX_STEP = 60
 

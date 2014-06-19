@@ -7,7 +7,10 @@ import random
 import mathtool
 import numpy
 import copy as py_copy
-from config import *
+import config
+
+ROW = config.ROW
+COL = config.COL
 
 #Key function here: measure the consensus of actions
 #This function should capture two things
@@ -22,11 +25,11 @@ def calc_weight(Qtable, state):
 #Input are all modules (regardless of types)
 def vote(modules):
     #Count the total weight of all actions
-    scoreCount = numpy.zeros(NUM_ACT)
+    scoreCount = numpy.zeros(config.NUM_ACT)
     for i in range(len(modules)):
 	state = modules[i].state
 	Qvalues = modules[i].Qtable[state[0]][state[1]]
-	for act in range(NUM_ACT):
+	for act in range(config.NUM_ACT):
             scoreCount[act] += Qvalues[act]
 	#scoreCount[modules[i].optimalAct] += modules[i].weight
     return scoreCount
@@ -48,4 +51,4 @@ class Module:
         self.state = py_copy.deepcopy(state)
         self.Qtable = py_copy.deepcopy(Qtable)
         self.weight = calc_weight(Qtable,state)
-        self.optimalAct = mathtool.optimalActionSelect(Qtable,state,NUM_ACT)
+        self.optimalAct = mathtool.optimalActionSelect(Qtable,state,config.NUM_ACT)

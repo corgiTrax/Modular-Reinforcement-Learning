@@ -23,6 +23,8 @@ myAgent = moduleTraining.Agent([0,0])
 
 stepCount = 0
 while (stepCount < MAX_STEP): 
+
+
     #Detect all rewards within range, get their positions
     rewardsNear = world.findNearbyObj('reward',myAgent.pos,VRANGE,testMaze)
     #Initialize one module for each reward

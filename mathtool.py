@@ -8,7 +8,11 @@ import random
 import copy as py_copy
 import math
 import numpy
-from config import *
+import config
+
+ROW = config.ROW
+COL = config.COL
+
 
 #Action selection functions
 def optimalActionSelect(Qtable,state,numAct):

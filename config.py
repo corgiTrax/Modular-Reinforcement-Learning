@@ -22,7 +22,7 @@ TMAZE_SIZE = VRANGE + 1
 
 
 #Q learning parameters for both modules
-NUM_EPISODE = 5000
+NUM_EPISODE = 1000
 MAX_STEP_EACH_EPISODE = 50
 EPSILON = 0.9
 
@@ -35,11 +35,17 @@ GAMMA_M2 = 0.5
 
 #main.py
 #Obstacle and price probabilities
-pObstacle = 0.4
-pReward = 0.5
+pObstacle = 0.2
+pReward = 0.4
 
 #Test Maze size
-TESTR = 8
-TESTC = 8
-MAX_STEP = 60
+TESTR = 10
+TESTC = 10
+MAX_STEP = 100
+
+#Graphic visualization
+#Maze cell size in pixel, everything else depends on this
+CELL_SIZE = 30
+
+
 

@@ -44,6 +44,7 @@ class Maze:
                     if (random.random() <= config.pReward):
                         self.mazeMap[i][j] = Reward
                         self.rewards.append([i,j])
+                    #This is not exactly correct, pReward and pObstacle should be indepedent
                     elif (random.random() <= config.pObstacle):
                         self.mazeMap[i][j] = Obstacle
                         self.obstacles.append([i,j])
@@ -52,14 +53,49 @@ class Maze:
 	    #This map keeps a backup of original map
         self.originalMap = py_copy.deepcopy(self.mazeMap)
     
-#    def drawPic(self, window):
-#    	#Draw maze grid:
-#	    cells = []
-#	    for i in range(self.rows):
-#	        for j in range(self.columns):
-#	    	    cell = 1
+    def drawSelf(self, width_, height_, isnew):
+        if (isnew == True):
+        #Draw maze grid:
+            self.window = graph.GraphWin(title = "Maze", width = width_, height = height_)
+            cells = []
+            for i in range(self.rows):
+                for j in range(self.columns):
+                    cell = graph.Rectangle(graph.Point(i * config.CELL_SIZE, j * config.CELL_SIZE),graph.Point((i + 1) * config.CELL_SIZE, (j + 1) * config.CELL_SIZE))
+                    cell.draw(self.window)
 
-	#Draw maze objects:
+            #Draw prices, since some prices need to be removed, keep a list of all price pics
+            self.pricePics = []
+            for i in range(len(self.rewards)):
+                cur_price = self.rewards[i]
+                pricePic = graph.Circle(graph.Point((cur_price[COL] + 0.5) * config.CELL_SIZE, (cur_price[ROW] + 0.5) * config.CELL_SIZE), config.CELL_SIZE/3)
+                pricePic.setFill('orange')
+                self.pricePics.append(pricePic)
+                pricePic.draw(self.window)
+    
+            #Draw obstacles
+            for i in range(len(self.obstacles)):
+                cur_obs = self.obstacles[i]
+                topLeftPt = graph.Point(cur_obs[COL] * config.CELL_SIZE, cur_obs[ROW] * config.CELL_SIZE)
+                bottomRightPt = graph.Point((cur_obs[COL] + 1) * config.CELL_SIZE, (cur_obs[ROW] + 1) * config.CELL_SIZE)
+    
+                obsPic = graph.Rectangle(topLeftPt,bottomRightPt)
+                obsPic.setFill('gray')
+                obsPic.draw(self.window)
+        else:
+            #redraw all prices
+            for i in range(len(self.pricePics)):
+                self.pricePics[i].undraw()
+                
+
+            self.pricePics = []
+            for i in range(len(self.rewards)):
+                cur_price = self.rewards[i]
+                pricePic = graph.Circle(graph.Point((cur_price[COL] + 0.5) * config.CELL_SIZE, (cur_price[ROW] + 0.5) * config.CELL_SIZE), config.CELL_SIZE/3)
+                pricePic.setFill('orange')
+                self.pricePics.append(pricePic)
+                pricePic.draw(self.window)
+            
+
     def printMap(self, mapRequest):
         if (mapRequest == 'original'):
             print('This is original map')

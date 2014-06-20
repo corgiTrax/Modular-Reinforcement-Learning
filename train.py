@@ -2,7 +2,7 @@
 #Modular RL Project
 #Ruohan Zhang
 
-from moduleTraining import *
+from reinforcement import *
 
 QtableM1 = train_M1()
 QtableM2 = train_M2()

@@ -16,6 +16,7 @@ import random
 import copy as py_copy
 import numpy
 import math
+import graphics as graph
 from config import *
 
 #Now we do not decompose actions, same actions are used globally
@@ -24,7 +25,7 @@ from config import *
 class Agent:
     def __init__(self,initPos):
         self.pos = py_copy.deepcopy(initPos)
-	self.cumReward = 0
+        self.cumReward = 0
 
     def setPos(self, position):
         self.pos = position
@@ -39,7 +40,18 @@ class Agent:
         if (self.pos[1] >= maze.columns):self.pos[1] = maze.columns - 1;        
         if (self.pos[1] < 0):self.pos[1] = 0;
 
-
+    def drawSelf(self, window, isnew):
+        if (isnew == True):
+            self.agentPic = graph.Circle(graph.Point((self.pos[COL] + 0.5) * CELL_SIZE, (self.pos[ROW] + 0.5) * CELL_SIZE), CELL_SIZE/6)
+            self.agentPic.setFill('red')
+            self.agentPic.draw(window)
+        else:
+            #window.getMouse()
+            dx = -self.agentPic.getCenter().getX() + (self.pos[COL] + 0.5) * CELL_SIZE
+            dy = -self.agentPic.getCenter().getY() + (self.pos[ROW] + 0.5) * CELL_SIZE
+            self.agentPic.move(dx,dy)
+    
+    
 #Module 1: reward collection
 #S: (row, col) position of the object, relative to agent, must be odd numbers now
 #A: up, down, left, right
@@ -83,19 +95,17 @@ def train_M1():
     #set of object positions (every position in the quater)
     objPosSet = []
     for i in range(TMAZE_SIZE):
-	for j in range(TMAZE_SIZE):
-	    objPosSet.append([i,j])
+        for j in range(TMAZE_SIZE):
+            objPosSet.append([i,j])
 
     for agentPos in agentPosSet:
-	for objPos in objPosSet:
+        for objPos in objPosSet:
 	    #Train agent in current agentPos,objPos for several episodes
-	    for episode in range(NUM_EPISODE):
-		 
-		#Generate a maze, place object 
-            	trainMaze = world.Maze(TMAZE_SIZE,TMAZE_SIZE,'reward',objPos)
-
-		#Start agent at fixed position
-		learningAgent = Agent(agentPos)
+            for episode in range(NUM_EPISODE):
+                #Generate a maze, place object 
+                trainMaze = world.Maze(TMAZE_SIZE,TMAZE_SIZE,'reward',objPos)
+                #Start agent at fixed position
+                learningAgent = Agent(agentPos)
 
             	#Initialize state, action
                 state = stateMapping_M1(learningAgent.pos,trainMaze.rewards[0])
@@ -103,15 +113,14 @@ def train_M1():
                 stepCount = 0
         
                 while (stepCount < MAX_STEP_EACH_EPISODE and state != [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
-
-            	    learningAgent.move(action,trainMaze)
-            	    stateNext = stateMapping_M1(learningAgent.pos,trainMaze.rewards[0])
-	    	    actionNext = mathtool.eGreedyActionSelect(Qtable,stateNext,NUM_ACT,EPSILON)
-            	    reward = calcReward_M1(stateNext)
-            	    Qtable = updateQ_M1(Qtable,state,action,reward,stateNext,actionNext)
-            	    state = stateNext
-            	    action = actionNext
-            	    stepCount += 1
+                    learningAgent.move(action,trainMaze)
+                    stateNext = stateMapping_M1(learningAgent.pos,trainMaze.rewards[0])
+                    actionNext = mathtool.eGreedyActionSelect(Qtable,stateNext,NUM_ACT,EPSILON)
+                    reward = calcReward_M1(stateNext)
+                    Qtable = updateQ_M1(Qtable,state,action,reward,stateNext,actionNext)
+                    state = stateNext
+                    action = actionNext
+                    stepCount += 1
 
     print('M1 Training Complete')
     return Qtable
@@ -122,7 +131,7 @@ def printPolicy_M1(Qtable,objPos):
     for i in range(testMaze.rows):
         for j in range(testMaze.columns):
             state = stateMapping_M1([i,j],testMaze.rewards[0])
-	    action = mathtool.optimalActionSelect(Qtable,state,NUM_ACT)
+            action = mathtool.optimalActionSelect(Qtable,state,NUM_ACT)
             testMaze.recordAction([i,j],action)         
     testMaze.printMap('original')
     testMaze.printMap('path')
@@ -170,19 +179,17 @@ def train_M2():
     #set of object positions (every position in the quater)
     objPosSet = []
     for i in range(TMAZE_SIZE):
-	for j in range(TMAZE_SIZE):
-	    objPosSet.append([i,j])
+        for j in range(TMAZE_SIZE):
+            objPosSet.append([i,j])
 
     for agentPos in agentPosSet:
-	for objPos in objPosSet:
-	    #Train agent in current agentPos,objPos for several episodes
-	    for episode in range(NUM_EPISODE):
-		 
-		#Generate a maze, place object 
-            	trainMaze = world.Maze(TMAZE_SIZE,TMAZE_SIZE,'obstacle',objPos)
-
-		#Start agent at fixed position
-		learningAgent = Agent(agentPos)
+        for objPos in objPosSet:
+	        #Train agent in current agentPos,objPos for several episodes
+            for episode in range(NUM_EPISODE):
+                #Generate a maze, place object 
+                trainMaze = world.Maze(TMAZE_SIZE,TMAZE_SIZE,'obstacle',objPos)
+                #Start agent at fixed position
+                learningAgent = Agent(agentPos)
 
             	#Initialize state, action
                 state = stateMapping_M2(learningAgent.pos,trainMaze.obstacles[0])
@@ -190,15 +197,14 @@ def train_M2():
                 stepCount = 0
         
                 while (stepCount < MAX_STEP_EACH_EPISODE and state != [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
-
-            	    learningAgent.move(action,trainMaze)
-            	    stateNext = stateMapping_M2(learningAgent.pos,trainMaze.obstacles[0])
-	    	    actionNext = mathtool.eGreedyActionSelect(Qtable,stateNext,NUM_ACT,EPSILON)
-            	    reward = calcReward_M2(stateNext)
-            	    Qtable = updateQ_M2(Qtable,state,action,reward,stateNext,actionNext)
-            	    state = stateNext
-            	    action = actionNext
-            	    stepCount += 1
+                    learningAgent.move(action,trainMaze)
+                    stateNext = stateMapping_M2(learningAgent.pos,trainMaze.obstacles[0])
+                    actionNext = mathtool.eGreedyActionSelect(Qtable,stateNext,NUM_ACT,EPSILON)
+                    reward = calcReward_M2(stateNext)
+                    Qtable = updateQ_M2(Qtable,state,action,reward,stateNext,actionNext)
+                    state = stateNext
+                    action = actionNext
+                    stepCount += 1
 
     print('M2 Training Complete')
     return Qtable
@@ -219,19 +225,19 @@ def printPolicy_M2(Qtable,objPos):
 def writeQToFile(Qtable,filename):
     myFile = open(filename,'w')
     for i in range (len(Qtable)):
-	for j in range(len(Qtable[i])):
-	    for k in range(len(Qtable[i][j])):
-		myFile.write(str(Qtable[i][j][k]))
-		myFile.write('\n')
+	    for j in range(len(Qtable[i])):
+	        for k in range(len(Qtable[i][j])):
+		        myFile.write(str(Qtable[i][j][k]))
+		        myFile.write('\n')
 
 
 def readQFromFile(filename):
     Qtable = numpy.zeros((MAX_ROW,MAX_COL,NUM_ACT))
     myFile = open(filename,'r')
     for i in range (len(Qtable)):
-	for j in range(len(Qtable[i])):
-	    for k in range(len(Qtable[i][j])):
-	        Qtable[i][j][k] = float(myFile.readline())
+        for j in range(len(Qtable[i])):
+            for k in range(len(Qtable[i][j])):
+                Qtable[i][j][k] = float(myFile.readline())
     return Qtable
 
 #QtableM1 = train_M1()

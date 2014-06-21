@@ -12,15 +12,11 @@ from config import *
 
 
 #Read a Qtable for module 1
-QtableM1 = reinforcement.readQFromFile('Q1.txt')
-#reinforcement.printPolicy_M1(QtableM1,[2,2])
+QtableM1 = reinforcement.readQFromFile('Q1_VRANGE_15.txt')
 #Read a Qtable for module 2
-QtableM2 = reinforcement.readQFromFile('Q2.txt')
-#reinforcement.printPolicy_M2(QtableM2,[2,2])
+QtableM2 = reinforcement.readQFromFile('Q2_VRANGE_3.txt')
 
-
-
-#Combined Navigation
+#Navigation
 testMaze = world.Maze(TESTR,TESTC,'test')
 testMaze.drawSelf(TESTR * CELL_SIZE, TESTC * CELL_SIZE + 100, True)
 
@@ -29,21 +25,25 @@ myAgent.drawSelf(testMaze.window,True)
 stepCount = 0
 
 while (stepCount < MAX_STEP): 
-    #Execute one step only when mouse clicks
-    testMaze.window.getMouse()
-
-    #Detect all rewards within range, get their positions
-    rewardsNear = world.findNearbyObj('reward',myAgent.pos,VRANGE,testMaze)
-    #Initialize one module for each reward
-    rewardModules = []
-    #Each module measure its own state, suggested action, flatness, and weight
-    for i in range(len(rewardsNear)):
-        state = reinforcement.stateMapping_M1(myAgent.pos,rewardsNear[i])
-        newModule = moduleClass.Module(QtableM1,state)
-        rewardModules.append(newModule)
+#    #Detect all rewards within range, get their positions
+#    pricesNear = world.findNearbyObj('price',myAgent.pos,VRANGE_M1,testMaze)
+#    #Initialize one module for each price
+#    priceModules = []
+#    #Each module measure its own state, suggested action, flatness, and weight
+#    for i in range(len(pricesNear)):
+#        state = reinforcement.stateMapping_M1(myAgent.pos,rewardsNear[i])
+#        priceModules.append(moduleClass.Module(QtableM1,state))
+    
+    #Detect nearest price
+    priceNearest = world.findNearestPrice(myAgent.pos,testMaze)
+    print("Currently pursuing: ", priceNearest)
+    priceModules = []
+    state = reinforcement.stateMapping_M1(myAgent.pos,priceNearest)
+    priceModules.append(moduleClass.Module(QtableM1,state))
+    
 
     #Detect all obstacles within range, get their positions
-    obstaclesNear = world.findNearbyObj('obstacle',myAgent.pos,VRANGE,testMaze)
+    obstaclesNear = world.findNearbyObj('obstacle',myAgent.pos,VRANGE_M2,testMaze)
     #Initialize one module for each obstacle
     obstacleModules = []
     #Each module measure its own state, suggested action, flatness, and weight
@@ -53,7 +53,7 @@ while (stepCount < MAX_STEP):
         obstacleModules.append(newModule)
 
     #Combine all suggested action by their weight, determine global action
-    allModules = rewardModules + obstacleModules    
+    allModules = priceModules + obstacleModules    
     scores = moduleClass.vote(allModules)
     action = moduleClass.decideAct(scores)
     #for i in range(len(allModules)):
@@ -72,8 +72,8 @@ while (stepCount < MAX_STEP):
     print('step:',stepCount)
     #testMaze.printMap('path')
 
-
-
+    #Execute one step only when mouse clicks
+    testMaze.window.getMouse()
 
 #Hold graph window
 raw_input("Press enter to exit")

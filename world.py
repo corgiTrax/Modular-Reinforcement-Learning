@@ -79,7 +79,7 @@ class Maze:
                 bottomRightPt = graph.Point((cur_obs[COL] + 1) * config.CELL_SIZE, (cur_obs[ROW] + 1) * config.CELL_SIZE)
     
                 obsPic = graph.Rectangle(topLeftPt,bottomRightPt)
-                obsPic.setFill('gray')
+                obsPic.setFill('black')
                 obsPic.draw(self.window)
         else:
             #redraw all prices
@@ -153,24 +153,37 @@ class Maze:
 
 #Find nearby objects
 def findNearbyObj(objType, agentPos, agentVRange, maze):
-    visibleRange = agentPos[0]
     objList = []
-    if (objType == 'reward'):
+    if (objType == 'price'):
         for i in range(len(maze.rewards)):
-            curRewardPos = maze.rewards[i]
-            rowDist = abs(agentPos[0] - curRewardPos[0])
-            colDist = abs(agentPos[1] - curRewardPos[1])
+            curPrice = maze.rewards[i]
+            rowDist = abs(agentPos[ROW] - curPrice[ROW])
+            colDist = abs(agentPos[COL] - curPrice[COL])
             if (rowDist <= agentVRange and colDist <=agentVRange):
-                obj = py_copy.deepcopy(curRewardPos)
+                obj = py_copy.deepcopy(curPrice)
                 objList.append(obj)
 
     if (objType == 'obstacle'):
         for i in range(len(maze.obstacles)):
-            curRewardPos = maze.obstacles[i]
-            rowDist = abs(agentPos[0] - curRewardPos[0])
-            colDist = abs(agentPos[1] - curRewardPos[1])
+            curObs = maze.obstacles[i]
+            rowDist = abs(agentPos[ROW] - curObs[ROW])
+            colDist = abs(agentPos[COL] - curObs[COL])
             if (rowDist <= agentVRange and colDist <=agentVRange):
-                obj = py_copy.deepcopy(curRewardPos)
+                obj = py_copy.deepcopy(curObs)
                 objList.append(obj)            
 
     return objList
+
+#Find nearest price
+def findNearestPrice(agentPos, maze):
+    minDist = maze.rows + maze.columns
+    for i in range(len(maze.rewards)):
+        curPrice = maze.rewards[i]
+        rowDist = abs(agentPos[ROW] - curPrice[ROW])
+        colDist = abs(agentPos[COL] - curPrice[COL])
+        dist = rowDist + colDist
+        if (dist <= minDist):
+            minDist = dist
+            nearestPrice = curPrice
+    return nearestPrice
+            

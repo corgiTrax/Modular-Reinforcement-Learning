@@ -55,15 +55,14 @@ class Agent:
 #Module 1: reward collection
 #S: (row, col) position of the object, relative to agent, must be odd numbers now
 #A: up, down, left, right
-#R: +1 for reward collected, 0 ow
+#R: +P_PRICE for reward collected, 0 ow
 def calcReward_M1(state):
-    if (state == [math.floor(MAX_ROW/2),math.floor(MAX_COL/2)]):
-        reward = R_REWARD
+    if (state == [math.floor(MAX_ROW_M1/2),math.floor(MAX_COL_M1/2)]):
+        reward = R_PRICE
     else:
         reward = 0
     return reward
 #State Mapping function: map real world state into module state
-#T: no wall yet ????
 def stateMapping_M1(agentPos, objPos):
     offsetROW = int(math.floor(MAX_ROW/2))
     offsetCOL = int(math.floor(MAX_COL/2))

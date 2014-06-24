@@ -17,17 +17,20 @@ ACTIONS = [Up,Down,Left,Right]
 VRANGE_M1 = 15
 #Size of M1 Q table
 MAX_ROW_M1 = VRANGE_M1 * 2 + 1
-MAX_COL_M1 = VRANGE_M2 * 2 + 1
+MAX_COL_M1 = VRANGE_M1 * 2 + 1
 #Training maze size (we partition state space into 4 parts to allow more efficient training)
-TMAZE_SIZE_M1 = VRANGE + 1
+TMAZE_SIZE_M1 = VRANGE_M1 + 1
 #Reward
 R_PRICE = 10
 GAMMA_M1 = 0.5
 #Training parameters
-ALPHA_M1 = 0.6
-NUM_EPISODE_M1 = 1000
-MAX_STEP_EACH_EPISODE_M1 = 200
+ALPHA_M1 = 0.7
+NUM_EPISODE_M1 = 2000
+MAX_STEP_EACH_EPISODE_M1 = 100
 EPSILON_M1 = 0.9
+
+#this VRANGE is for actual navigation, altough agent is trained to see VRANGE_M1, it does not need to see that far
+TEST_VRANGE_M1 = 3
 
 #Vision range for obstacles(Module 2), 3 means (0,0) can see (3,3)
 VRANGE_M2 = 3
@@ -35,28 +38,30 @@ VRANGE_M2 = 3
 MAX_ROW_M2 = VRANGE_M2 * 2 + 1
 MAX_COL_M2 = VRANGE_M2 * 2 + 1
 TMAZE_SIZE_M2 = VRANGE_M2 + 1
-R_OBSTACLE = -10 
-GAMMA_M2 = 0.5
-NUM_EPISODE_M2 = 2000
+R_OBSTACLE = -3 
+GAMMA_M2 = 0.0
+ALPHA_M2 = 0.7
+NUM_EPISODE_M2 = 500
 MAX_STEP_EACH_EPISODE_M2 = 50
 EPSILON_M2 = 0.9
 
+TEST_VRANGE_M2 = 3
 #Reward for empty slot
 R_EMPTY = 0
 
 ########## Test maze parameters
 #Obstacle and price probabilities
-pObstacle = 0.2
-pReward = 0.4
+pObstacle = 0.3
+pPrice = 0.35
 
 #Test Maze size
-TESTR = 10
-TESTC = 10
-MAX_STEP = 100
+TESTR = 15
+TESTC = 15
+MAX_STEP = 1000
 
 #Graphic visualization
 #Maze cell size in pixel, everything else depends on this
-CELL_SIZE = 30
+CELL_SIZE = 40
 
 
 

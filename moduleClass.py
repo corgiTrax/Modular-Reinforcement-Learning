@@ -25,23 +25,33 @@ def calc_weight(Qtable, state):
 #Input are all modules (regardless of types)
 def vote(modules):
     #Count the total weight of all actions
-    scoreCount = numpy.zeros(config.NUM_ACT)
+    scoreCount = numpy.zeros(config.NUM_ACT)   
+
+    #Method 1: Russell and Zimdars: Q-decomposition: sum Q values of all modules
     for i in range(len(modules)):
-	state = modules[i].state
-	Qvalues = modules[i].Qtable[state[0]][state[1]]
-	for act in range(config.NUM_ACT):
+	    state = modules[i].state
+	    Qvalues = modules[i].Qtable[state[0]][state[1]]
+	    for act in range(config.NUM_ACT):
             scoreCount[act] += Qvalues[act]
-	#scoreCount[modules[i].optimalAct] += modules[i].weight
+
+    #Method 2: standard deviation (weight) of Q values over actions
+    for i in range(len(modules)):
+        scoreCount[modules[i].optimalAct] += modules[i].weight
     return scoreCount
 
 #Find action with highest accumulated weight
 def decideAct(scoreCount):
+   
+    #Method 1: Choosing the action with highest score Count
     act = 0;
     score = scoreCount[0]
     for i in range(len(scoreCount)):
         if (scoreCount[i] > score):
 	    act = i
 	    score = scoreCount[i]
+    
+    #Method 2: Choosing actions with softmax probability
+
     return act   
 
 

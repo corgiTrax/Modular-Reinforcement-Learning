@@ -33,16 +33,17 @@ class Maze:
         for i in range(rows):
             for j in range(columns):
                 self.mazeMap[i][j] = Empty
+        
         if (mazeType == 'price'):#generate a maze with single price
             self.mazeMap[self.objectPos[0]][self.objectPos[1]] = Price
             self.prices.append(self.objectPos)
         if (mazeType == 'obstacle'):#generate a maze with single obstacle
             self.mazeMap[self.objectPos[0]][self.objectPos[1]] = Obstacle
             self.obstacles.append(self.objectPos)
-        if (mazeType == 'test'):#generate a random map
+        if (mazeType == 'test'):#generate a random map, and store in map file
             for i in range(rows):
                for j in range(columns):
-                    if (i == 0 or j == 0 or i == self.rows - 1 or j == self.columns - 1):
+                    if (i == 0 or j == 0 or i == self.rows - 1 or j == self.columns - 1):#place obstacles at edges
                         self.mazeMap[i][j] = Obstacle
                         self.obstacles.append([i,j])
                     elif (random.random() <= config.pPrice):
@@ -52,6 +53,8 @@ class Maze:
                     elif (random.random() <= config.pObstacle):
                         self.mazeMap[i][j] = Obstacle
                         self.obstacles.append([i,j])
+        #if (mazeType == 'file'): #read map form a file
+        
         #This map records agent path
         self.pathMap = py_copy.deepcopy(self.mazeMap)
 	    #This map keeps a backup of original map
@@ -59,14 +62,14 @@ class Maze:
     
     def drawSelf(self, isnew):
         if (isnew == True):
-            width_ = self.columns * config.CELL_SIZE + 100
-            height_ = self.rows * config.CELL_SIZE + 100
+            width_ = (self.columns + 2) * config.CELL_SIZE
+            height_ = (self.rows + 2) * config.CELL_SIZE
         #Draw maze grid:
             self.window = graph.GraphWin(title = "Maze", width = width_, height = height_)
             cells = []
             for i in range(self.rows):
                 for j in range(self.columns):
-                    cell = graph.Rectangle(graph.Point(i * config.CELL_SIZE, j * config.CELL_SIZE),graph.Point((i + 1) * config.CELL_SIZE, (j + 1) * config.CELL_SIZE))
+                    cell = graph.Rectangle(graph.Point(j * config.CELL_SIZE, i * config.CELL_SIZE),graph.Point((j + 1) * config.CELL_SIZE, (i + 1) * config.CELL_SIZE))
                     cell.draw(self.window)
 
             #Draw prices, since some prices need to be removed, keep a list of all price pics
@@ -98,7 +101,7 @@ class Maze:
                 label = graph.Text(graph.Point((i + 0.5) * config.CELL_SIZE, (self.rows + 0.5) * config.CELL_SIZE),str(i))
                 label.draw(self.window)
 
-        else:
+        else:#if this is not a new maze
             #redraw all prices
             for i in range(len(self.pricePics)):
                 self.pricePics[i].undraw()
@@ -208,7 +211,7 @@ def findNearestPrice(agentPos, maze):
             minDist = dist
             nearestPrice = curPrice
         elif (dist == minDist):#Break tie randomly
-            if (random.random() < 0.5):
+            if (random.random() >= 0.5):
                 minDist = dist
                 nearestPrice = curPrice
     return nearestPrice

@@ -2,23 +2,22 @@
 #Requires numpy support
 #Ruohan Zhang
 
+'''Note: traditional RL does not work for current domain and scale!!!
+Because prices can be collected! Then the state space is maze.rows * maze.columns * (2 ** NUM_PRICES)
+'''
+
 import world
 import random
 import copy as py_copy
-from numpy import *
-trainingMaze = world.Maze(3,25,1.0)
+import numpy
+import mathtool
+from config import *
 
 #An MDP is a tuple {S,A,R,T, Gamma}
 
 ############################# Traditional RL #############################
-#Action
-NUM_ACT = 4
-Up = 0; Down = 1; Left = 2; Right = 3;
-Action = [Up, Down, Left, Right]
-
-#State
-ROW = 0
-COL = 1
+#Actions: defined in config
+#States: absolute coordinates in current maze
 
 #State transition
 def move(curPos, action, maze):
@@ -34,63 +33,48 @@ def move(curPos, action, maze):
     return newPos
 
 #Reward
-#finishline has reward of +1 and other states have -1 obstacle has -5
-def calcReward(state,curMaze):
-    if(state[COL] == curMaze.columns - 1):
-        reward = 0
+def calcReward(state, maze):
+    i = state[ROW]
+    j = state[COL]
+    if (maze.mazeMap[i][j] == world.PRICE):
+        reward = R_PRICE
+    elif (maze.mazeMap[i][j] == world.OBSTACLE):
+        reward = R_OBSTACLE
     else:
-        reward = -1
-    if (curMaze.map[state[ROW]][state[COL]] == -1):
-        reward = -6
+        reward = R_EMPTY
     return reward
 
-#Action selection functions
-def optimalActionSelect(Qtable,state):
-    action = 0
-    for i in range(NUM_ACT):
-        if (Qtable[state[ROW]][state[COL]][i] > Qtable[state[ROW]][state[COL]][action]):
-            action = i
-    return action
-def eGreedyActionSelect(Qtable,state):
-    EPSILON = 0.9
-    seed = random.random()
-    #Exploit
-    if (seed < EPSILON):
-        action = optimalActionSelect(Qtable,state)
-    #Explore
-    else:
-        action = random.choice(range(NUM_ACT))
-    return action
-
-#Q learning update rule and parameters
-def updateQ(Qtable,state,action,reward,stateNext):
-    Gamma = 0.99
-    Alpha = 0.5
-    actionNext = optimalActionSelect(Qtable,stateNext)
-    temp = Alpha * (reward + Gamma * Qtable[stateNext[ROW]][stateNext[COL]][actionNext] - Qtable[state[ROW]][state[COL]][action])
+#Sarsa learning update rule and parameters
+def updateQ(Qtable,state,action,reward,stateNext,actionNext):
+    GAMMA = 0.99
+    ALPHA = 0.6
+    temp = ALPHA * (reward + GAMMA * Qtable[stateNext[ROW]][stateNext[COL]][actionNext] - Qtable[state[ROW]][state[COL]][action])
     Qtable[state[ROW]][state[COL]][action] += temp
     return Qtable
 
-#Q learning process
-def qLearning(curMaze):
+#Training
+def train(curMaze):
     #Q table initialization
     Qtable = zeros((curMaze.rows,curMaze.columns,NUM_ACT))
     NUM_EPISODE = 1000
-    MAX_STEP_EACH_EPISODE = 1000
+    MAX_STEP_EACH_EPISODE = 2000
+    EPSILON = 0.9
     
     for episode in range(NUM_EPISODE):
         #initialization for one episode
-        startRow = random.choice(range(3))
-        state = [startRow,0]
+        state = [random.choice(range(curMaze.rows)),random.choice(range(curMaze.columns))]
+        action = mathtool.eGreedyActionSelect(Qtable,state,NUM_ACT,EPSILON)
         stepCount = 0
-        while((state[COL] != curMaze.columns - 1) and (stepCount < MAX_STEP_EACH_EPISODE)):
-            action = eGreedyActionSelect(Qtable,state)
 
+        while(stepCount < MAX_STEP_EACH_EPISODE):
             stateNext = move(state,action,curMaze)
+            actionNext = eGreedyActionSelect(Qtable,stateNext)
             reward = calcReward(stateNext,curMaze)
             Qtable = updateQ(Qtable,state,action,reward,stateNext)
             state = stateNext
+            action = actionNext
             stepCount += 1
+    
     print('Current Maze Training Complete')
     return Qtable
 

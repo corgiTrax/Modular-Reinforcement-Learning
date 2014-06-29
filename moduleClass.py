@@ -16,9 +16,8 @@ COL = config.COL
 #This function should capture two things
 #1. How much is the expected reward (signaled by learned value, related to reward when training)
 #2. at this state, indifference level on actions?
-def calc_weight(Qtable, state):
-    Qvalues = Qtable[state[0]][state[1]]
-    #standard deviation, for discrete states
+def calc_weight(Qvalues):
+    #standard deviation, for discrete actions
     return mathtool.calc_sd(Qvalues)
 
 #Another key function here: voting
@@ -29,28 +28,43 @@ def vote(modules):
 
     #Method 1: Russell and Zimdars: Q-decomposition: sum Q values of all modules
     for i in range(len(modules)):
-	    state = modules[i].state
-	    Qvalues = modules[i].Qtable[state[0]][state[1]]
-	    for act in range(config.NUM_ACT):
-            scoreCount[act] += Qvalues[act]
+       for act in range(config.NUM_ACT):
+            scoreCount[act] += modules[i].Qvalues[act]
 
-    #Method 2: standard deviation (weight) of Q values over actions
+    #Method 2: each module votes standard deviation (weight) of Q values over actions
+#    for i in range(len(modules)):
+#        scoreCount[modules[i].optimalAct] += modules[i].weight
+
+    #Method 3: choose the module with highest weight (standard deviation), and choose its optimal action
+    maxWeight = 0
+    chosenModule = 0
     for i in range(len(modules)):
-        scoreCount[modules[i].optimalAct] += modules[i].weight
+        if (modules[i].weight >= maxWeight):
+            maxWeight = modules[i].weight
+            chosenModule = i
+    scoreCount[modules[chosenModule].optimalAct] = 1000
+
     return scoreCount
 
 #Find action with highest accumulated weight
-def decideAct(scoreCount):
-   
-    #Method 1: Choosing the action with highest score Count
-    act = 0;
-    score = scoreCount[0]
-    for i in range(len(scoreCount)):
-        if (scoreCount[i] > score):
-	    act = i
-	    score = scoreCount[i]
+def decideAct(scoreCount,softmaxFlag):
     
-    #Method 2: Choosing actions with softmax probability
+    #Method 1: Choosing the action with highest score Count
+    if (softmaxFlag == False):
+        act = 0
+        score = scoreCount[0]
+        for i in range(len(scoreCount)):
+            if (scoreCount[i] == score):
+                if (random.random() >= 0.5):
+                    act = i
+                    score = scoreCount[i]
+            if (scoreCount[i] > score):
+    	        act = i
+    	        score = scoreCount[i]
+      
+    #Method 2: Choosing actions with softmax probability(roulette, but this is questionable, since it is a randomized algorithm)
+    if (softmaxFlag == True):
+        act = mathtool.roulette(scoreCount)
 
     return act   
 
@@ -60,5 +74,7 @@ class Module:
     def __init__(self,Qtable,state):
         self.state = py_copy.deepcopy(state)
         self.Qtable = py_copy.deepcopy(Qtable)
-        self.weight = calc_weight(Qtable,state)
+        #Q values for actions under current state
+        self.Qvalues = py_copy.deepcopy(Qtable[state[0]][state[1]])
+        self.weight = calc_weight(self.Qvalues)
         self.optimalAct = mathtool.optimalActionSelect(Qtable,state,config.NUM_ACT)

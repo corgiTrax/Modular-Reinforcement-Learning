@@ -42,14 +42,24 @@ class Agent:
 
     def drawSelf(self, window, isnew):
         if (isnew == True):
-            self.agentPic = graph.Circle(graph.Point((self.pos[COL] + 0.5) * CELL_SIZE, (self.pos[ROW] + 0.5) * CELL_SIZE), CELL_SIZE/6)
+            self.picCenter = graph.Point((self.pos[COL] + 0.5) * CELL_SIZE, (self.pos[ROW] + 0.5) * CELL_SIZE)
+            self.agentPic = graph.Circle(self.picCenter, CELL_SIZE/3)
             self.agentPic.setFill('red')
             self.agentPic.draw(window)
+            #Draw two lines for obstacle detection vision range
+            self.hvrange = graph.Line(graph.Point(self.picCenter.getX() - TEST_VRANGE_M2 * CELL_SIZE, self.picCenter.getY()), graph.Point(self.picCenter.getX() + TEST_VRANGE_M2 * CELL_SIZE, self.picCenter.getY()))
+            self.hvrange.setFill('Blue')
+            self.hvrange.draw(window)
+            self.vvrange = graph.Line(graph.Point(self.picCenter.getX(), self.picCenter.getY() - TEST_VRANGE_M2 * CELL_SIZE), graph.Point(self.picCenter.getX(), self.picCenter.getY() + TEST_VRANGE_M2 * CELL_SIZE))
+            self.vvrange.setFill('Blue')
+            self.vvrange.draw(window)
+            
         else:
-            #window.getMouse()
             dx = -self.agentPic.getCenter().getX() + (self.pos[COL] + 0.5) * CELL_SIZE
             dy = -self.agentPic.getCenter().getY() + (self.pos[ROW] + 0.5) * CELL_SIZE
             self.agentPic.move(dx,dy)
+            self.hvrange.move(dx,dy)
+            self.vvrange.move(dx,dy)
     
     
 #Module 1: price collection
@@ -68,14 +78,19 @@ def stateMapping_M1(agentPos, objPos):
     offsetCOL = int(math.floor(MAX_COL_M1/2))
     state = [objPos[ROW] - agentPos[ROW] + offsetROW,objPos[COL] - agentPos[COL] + offsetCOL]
     return state
-
+def stateMappingInverse_M1(state,agentPos):
+    offsetROW = int(math.floor(MAX_ROW_M1/2))
+    offsetCOL = int(math.floor(MAX_COL_M1/2))
+    objPos = [state[ROW] + agentPos[ROW] - offsetROW, state[COL] + agentPos[COL] - offsetCOL]
+    return objPos
+   
 #Q learnig update
 def updateQ_M1(Qtable,state,action,reward,stateNext,actionNext):
     #Discount factor
     Gamma = GAMMA_M1
     Alpha = ALPHA_M1
     #This is for Q learning update
-    #actionNext = mathtool.optimalActionSelect(Qtable,stateNext,NUM_ACT)
+    #actionNextQ = mathtool.optimalActionSelect(Qtable,stateNext,NUM_ACT)
     temp = Alpha * (reward + Gamma * Qtable[stateNext[0]][stateNext[1]][actionNext] - Qtable[state[0]][state[1]][action])
     Qtable[state[0]][state[1]][action] += temp
     return Qtable
@@ -133,6 +148,14 @@ def printPolicy_M1(Qtable,objPos):
     testMaze.printMap('original')
     testMaze.printMap('path')
 
+def printQtable_M1(QtableM1):
+    agentPos = [0,0]
+    for i in range(MAX_ROW_M1):
+        for j in range(MAX_COL_M1):
+            state = [i,j]
+            objRelPos = stateMappingInverse_M1(state,agentPos)
+            print('object at:',objRelPos,'state:',state,'Q values:',QtableM1[state[0]][state[1]])
+
 
 #Module 2: obstacle avoidance
 #S: (row, col) position of the object, relative to agent, must be odd numbers now
@@ -151,7 +174,12 @@ def stateMapping_M2(agentPos, objPos):
     offsetCOL = int(math.floor(MAX_COL_M2/2))
     state = [objPos[ROW] - agentPos[ROW] + offsetROW,objPos[COL] - agentPos[COL] + offsetCOL]
     return state
-
+def stateMappingInverse_M2(state,agentPos):
+    offsetROW = int(math.floor(MAX_ROW_M2/2))
+    offsetCOL = int(math.floor(MAX_COL_M2/2))
+    objPos = [state[ROW] + agentPos[ROW] - offsetROW, state[COL] + agentPos[COL] - offsetCOL]
+    return objPos
+ 
 #Q learnig update
 def updateQ_M2(Qtable,state,action,reward,stateNext,actionNext):
     #Discount factor
@@ -214,5 +242,14 @@ def printPolicy_M2(Qtable,objPos):
             testMaze.recordAction([i,j],action)         
     testMaze.printMap('original')
     testMaze.printMap('path')
+
+def printQtable_M2(QtableM2):
+    agentPos = [0,0]
+    for i in range(MAX_ROW_M2):
+        for j in range(MAX_COL_M2):
+            state = [i,j]
+            objRelPos = stateMappingInverse_M2(state,agentPos)
+            print('object at:',objRelPos,'state:',state,'Q values:',QtableM2[state[0]][state[1]])
+
 
     

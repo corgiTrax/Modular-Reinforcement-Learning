@@ -22,10 +22,10 @@ MAX_COL_M1 = VRANGE_M1 * 2 + 1
 TMAZE_SIZE_M1 = VRANGE_M1 + 1
 #Reward
 R_PRICE = 10
-GAMMA_M1 = 0.5
+GAMMA_M1 = 0.7
 #Training parameters
-ALPHA_M1 = 0.7
-NUM_EPISODE_M1 = 2000
+ALPHA_M1 = 0.6
+NUM_EPISODE_M1 = 5000
 MAX_STEP_EACH_EPISODE_M1 = 100
 EPSILON_M1 = 0.9
 
@@ -38,21 +38,33 @@ VRANGE_M2 = 3
 MAX_ROW_M2 = VRANGE_M2 * 2 + 1
 MAX_COL_M2 = VRANGE_M2 * 2 + 1
 TMAZE_SIZE_M2 = VRANGE_M2 + 1
-R_OBSTACLE = -3 
+R_OBSTACLE = -10 
 GAMMA_M2 = 0.0
-ALPHA_M2 = 0.7
-NUM_EPISODE_M2 = 500
-MAX_STEP_EACH_EPISODE_M2 = 50
-EPSILON_M2 = 0.9
+ALPHA_M2 = 0.6
+NUM_EPISODE_M2 = 100
+MAX_STEP_EACH_EPISODE_M2 = 20
+EPSILON_M2 = 0.5
 
 TEST_VRANGE_M2 = 3
+
 #Reward for empty slot
 R_EMPTY = 0
 
-########## Test maze parameters
+########## Test parameters
+#Action selection parameters
+#Main.py, attention mechanism
+NEAREST_PRICE_ONLY = True
+#ModuleClass.py, flag for decideAct function
+SOFTMAX_ACTION = True
+#ModuleClass.py, flags for vote function
+SUMQ = True
+VOTE = False
+ONE_WINNER = False
+
+#Test maze
 #Obstacle and price probabilities
-pObstacle = 0.3
-pPrice = 0.35
+pObstacle = 0.2
+pPrice = 0.2
 
 #Test Maze size
 TESTR = 15
@@ -61,7 +73,7 @@ MAX_STEP = 1000
 
 #Graphic visualization
 #Maze cell size in pixel, everything else depends on this
-CELL_SIZE = 40
+CELL_SIZE = 30
 
 
 

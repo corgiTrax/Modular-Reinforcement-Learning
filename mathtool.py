@@ -13,14 +13,17 @@ from config import *
 #ROW = config.ROW
 #COL = config.COL
 
-
 #Action selection functions
 def optimalActionSelect(Qtable,state,numAct):
     action = 0
     for i in range(numAct):
+        if (Qtable[state[ROW]][state[COL]][i] == Qtable[state[ROW]][state[COL]][action]):
+            if (random.random() >= 0.5):
+                action = i
         if (Qtable[state[ROW]][state[COL]][i] > Qtable[state[ROW]][state[COL]][action]):
             action = i
     return action
+
 def eGreedyActionSelect(Qtable, state, numAct, epsilon):
     seed = random.random()
     #Exploit
@@ -40,6 +43,39 @@ def calc_sd(array):
     sd = numpy.std(array)
     return sd
 
+#Input: a vector of weights of actions
+#Return: an action according to its softmax probability
+def roulette(weights_):
+    weights = py_copy.deepcopy(weights_)
+    num_actions = len(weights)
+
+    #map to exponential
+    for i in range(num_actions):
+        weights[i] = math.exp(weights[i])
+
+    #normalize, get probability for each action
+    total_weight = 0
+    for i in range(num_actions):
+        total_weight += weights[i]
+    for i in range(num_actions):
+        weights[i] = weights[i] / total_weight
+    
+    #calc cumulative probability
+    cum_prob = numpy.zeros(num_actions + 1)
+    cum_prob[0] = 0
+    for i in range(num_actions):
+        cum_prob[i+1] = cum_prob[i] + weights[i]
+    
+    #random seed
+    seed = random.random()
+    for i in range(num_actions):
+        if (seed >= cum_prob[i] and seed < cum_prob[i+1]):
+            action = i
+    
+    return action
+
+
+#File IO functions
 #Train and store the Qtables for both modules
 def writeQToFile(Qtable,filename):
     myFile = open(filename,'w')

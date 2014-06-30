@@ -6,10 +6,10 @@ import mathtool
 import pylab
 
 
-myMaze = world.Maze(rows = 2, columns = 4, mazeType = 'price', objPos = [0,3])
-myMaze.drawSelf(isnew = True)
-myAgent = reinforcement.Agent([1,0])
-myAgent.drawSelf(myMaze.window, True)
+#myMaze = world.Maze(rows = 2, columns = 4, mazeType = 'price', objPos = [0,3])
+#myMaze.drawSelf(isnew = True)
+#myAgent = reinforcement.Agent([1,0])
+#myAgent.drawSelf(myMaze.window, True)
 
 
 QtableM1 = mathtool.readQFromFile('Q1_VRANGE_3Q.txt',"M1")
@@ -21,9 +21,9 @@ def queryQtable(Qtable,objRelPos):
 
 Qvalues = []
 for i in range(4):
-    Qvalues.append(queryQtable(QtableM1,[-1,-i]))
+    Qvalues.append(queryQtable(QtableM1,[0,i]))
     pylab.plot([0,1,2,3],Qvalues[i],'-o')
-
+    print(Qvalues[i])
 
 pylab.show()
 

@@ -26,7 +26,8 @@ myAgent = reinforcement.Agent([int(TESTR/2),int(TESTC/2)])
 myAgent.drawSelf(testMaze.window,True)
 stepCount = 0
 
-while (stepCount < MAX_STEP): 
+while (stepCount < MAX_STEP):
+    print('Step count',stepCount)
     if (NEAREST_PRICE_ONLY == False):
         #Detect all prices within range, get their positions
         pricesNear = world.findNearbyObj('price',myAgent.pos,TEST_VRANGE_M1,testMaze)

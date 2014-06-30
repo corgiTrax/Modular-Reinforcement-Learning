@@ -27,22 +27,25 @@ def vote(modules):
     scoreCount = numpy.zeros(config.NUM_ACT)   
 
     #Method 1: Russell and Zimdars: Q-decomposition: sum Q values of all modules
-    for i in range(len(modules)):
-       for act in range(config.NUM_ACT):
-            scoreCount[act] += modules[i].Qvalues[act]
+    if (config.SUMQ == True):
+        for i in range(len(modules)):
+            for act in range(config.NUM_ACT):
+                scoreCount[act] += modules[i].Qvalues[act]
 
     #Method 2: each module votes standard deviation (weight) of Q values over actions
-#    for i in range(len(modules)):
-#        scoreCount[modules[i].optimalAct] += modules[i].weight
+    if (config.VOTE == True):
+        for i in range(len(modules)):
+            scoreCount[modules[i].optimalAct] += modules[i].weight
 
     #Method 3: choose the module with highest weight (standard deviation), and choose its optimal action
-    maxWeight = 0
-    chosenModule = 0
-    for i in range(len(modules)):
-        if (modules[i].weight >= maxWeight):
-            maxWeight = modules[i].weight
-            chosenModule = i
-    scoreCount[modules[chosenModule].optimalAct] = 1000
+    if (config.ONE_WINNER == True):
+        maxWeight = 0
+        chosenModule = 0
+        for i in range(len(modules)):
+            if (modules[i].weight >= maxWeight):
+                maxWeight = modules[i].weight
+                chosenModule = i
+        scoreCount[modules[chosenModule].optimalAct] = 10
 
     return scoreCount
 

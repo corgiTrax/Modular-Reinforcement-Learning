@@ -29,8 +29,7 @@ NUM_EPISODE_M1 = 5000
 MAX_STEP_EACH_EPISODE_M1 = 100
 EPSILON_M1 = 0.9
 
-#this VRANGE is for actual navigation, altough agent is trained to see VRANGE_M1, it does not need to see that far
-TEST_VRANGE_M1 = 3
+
 
 #Vision range for obstacles(Module 2), 3 means (0,0) can see (3,3)
 VRANGE_M2 = 3
@@ -45,15 +44,16 @@ NUM_EPISODE_M2 = 100
 MAX_STEP_EACH_EPISODE_M2 = 20
 EPSILON_M2 = 0.5
 
-TEST_VRANGE_M2 = 3
-
 #Reward for empty slot
 R_EMPTY = 0
 
 ########## Test parameters
 #Action selection parameters
 #Main.py, attention mechanism
-NEAREST_PRICE_ONLY = True
+NEAREST_PRICE_ONLY = False
+#this VRANGE is for actual navigation, altough agent is trained to see VRANGE_M1, it does not need to see that far
+TEST_VRANGE_M1 = 15
+TEST_VRANGE_M2 = 3
 #ModuleClass.py, flag for decideAct function
 SOFTMAX_ACTION = True
 #ModuleClass.py, flags for vote function
@@ -64,7 +64,7 @@ ONE_WINNER = False
 #Test maze
 #Obstacle and price probabilities
 pObstacle = 0.2
-pPrice = 0.2
+pPrice = 0.5
 
 #Test Maze size
 TESTR = 15

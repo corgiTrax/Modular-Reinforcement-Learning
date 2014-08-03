@@ -96,12 +96,17 @@ def writeTrainParamsToFile(module,filename):
         vrangeParam += str(VRANGE_M1)
         rewardParam += str(R_PRICE)
         gammaParam += str(GAMMA_M1)
-        trainParam = trainParam + str(ALPHA_M1) + " " + str(EPSILON_M1) + " " + str(NUM_EPISODE_M1) + " " + str(MAX_STEP_EACH_EPISODE_M1)
+        trainParam = trainParam + str(NUM_EPISODE_M1) + " " + str(MAX_STEP_EACH_EPISODE_M1)
     if (module == "M2"):
         vrangeParam += str(VRANGE_M2)
         rewardParam += str(R_OBSTACLE)
         gammaParam += str(GAMMA_M2)
-        trainParam = trainParam + str(ALPHA_M2) + " " + str(EPSILON_M2) + " " + str(NUM_EPISODE_M2) + " " + str(MAX_STEP_EACH_EPISODE_M2)
+        trainParam = trainParam + str(NUM_EPISODE_M2) + " " + str(MAX_STEP_EACH_EPISODE_M2)
+    if (module == "M3"):
+        vrangeParam += str(VRANGE_M3)
+        rewardParam += str(R_PREDATOR)
+        gammaParam += str(GAMMA_M3)
+        trainParam = trainParam + str(NUM_EPISODE_M3) + " " + str(MAX_STEP_EACH_EPISODE_M3)
     myFile.write(vrangeParam)
     myFile.write('\n')
     myFile.write(rewardParam)
@@ -118,6 +123,9 @@ def readQFromFile(filename, module):
     if (module == "M2"):
         numRow = MAX_ROW_M2
         numCol = MAX_COL_M2
+    if (module == "M3"):
+        numRow = MAX_ROW_M3
+        numCol = MAX_COL_M3
     Qtable = numpy.zeros((numRow,numCol,NUM_ACT))
     myFile = open(filename,'r')
     for i in range (len(Qtable)):

@@ -40,13 +40,15 @@ class Maze:
         if (mazeType == 'obstacle'):#generate a maze with single obstacle
             self.mazeMap[self.objectPos[0]][self.objectPos[1]] = Obstacle
             self.obstacles.append(self.objectPos)
+        if (mazeType == 'predator'):#generate an empty maze
+            pass
         if (mazeType == 'test'):#generate a random map, and store in map file
             for i in range(rows):
                for j in range(columns):
-                    if (i == 0 or j == 0 or i == self.rows - 1 or j == self.columns - 1):#place obstacles at edges
-                        self.mazeMap[i][j] = Obstacle
-                        self.obstacles.append([i,j])
-                    elif (random.random() <= config.pPrice):
+#                    if (i == 0 or j == 0 or i == self.rows - 1 or j == self.columns - 1):#place obstacles at edges
+#                        self.mazeMap[i][j] = Obstacle
+#                        self.obstacles.append([i,j])
+                    if (random.random() <= config.pPrice):
                         self.mazeMap[i][j] = Price
                         self.prices.append([i,j])
                     #This is not exactly correct, pPrice and pObstacle should be indepedent
@@ -59,6 +61,8 @@ class Maze:
         self.pathMap = py_copy.deepcopy(self.mazeMap)
 	    #This map keeps a backup of original map
         self.originalMap = py_copy.deepcopy(self.mazeMap)
+    def writeMapToFile():
+        pass
     
     def drawSelf(self, isnew):
         if (isnew == True):
@@ -76,7 +80,7 @@ class Maze:
             self.pricePics = []
             for i in range(len(self.prices)):
                 cur_price = self.prices[i]
-                pricePic = graph.Circle(graph.Point((cur_price[COL] + 0.5) * config.CELL_SIZE, (cur_price[ROW] + 0.5) * config.CELL_SIZE), config.CELL_SIZE/3)
+                pricePic = graph.Circle(graph.Point((cur_price[COL] + 0.5) * config.CELL_SIZE, (cur_price[ROW] + 0.5) * config.CELL_SIZE), config.CELL_SIZE/6)
                 pricePic.setFill('orange')
                 self.pricePics.append(pricePic)
                 pricePic.draw(self.window)
@@ -109,7 +113,7 @@ class Maze:
             self.pricePics = []
             for i in range(len(self.prices)):
                 cur_price = self.prices[i]
-                pricePic = graph.Circle(graph.Point((cur_price[COL] + 0.5) * config.CELL_SIZE, (cur_price[ROW] + 0.5) * config.CELL_SIZE), config.CELL_SIZE/3)
+                pricePic = graph.Circle(graph.Point((cur_price[COL] + 0.5) * config.CELL_SIZE, (cur_price[ROW] + 0.5) * config.CELL_SIZE), config.CELL_SIZE/6)
                 pricePic.setFill('orange')
                 self.pricePics.append(pricePic)
                 pricePic.draw(self.window)
@@ -117,7 +121,7 @@ class Maze:
     def drawTargetPrice(self,targetPrice_):
         if(not(self.targetPrice is None)):
             self.targetPrice.undraw()
-        self.targetPrice = graph.Circle(graph.Point((targetPrice_[COL] + 0.5) * config.CELL_SIZE, (targetPrice_[ROW] + 0.5) * config.CELL_SIZE), config.CELL_SIZE/3)
+        self.targetPrice = graph.Circle(graph.Point((targetPrice_[COL] + 0.5) * config.CELL_SIZE, (targetPrice_[ROW] + 0.5) * config.CELL_SIZE), config.CELL_SIZE/6)
         self.targetPrice.setFill('green')
         self.targetPrice.draw(self.window)
 

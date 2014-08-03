@@ -50,8 +50,8 @@ def vote(modules):
     return scoreCount
 
 #Find action with highest accumulated weight
-def decideAct(scoreCount,softmaxFlag):
-    
+def decideAct(scoreCount):
+    softmaxFlag = config.SOFTMAX_ACTION
     #Method 1: Choosing the action with highest score Count
     if (softmaxFlag == False):
         act = 0

@@ -61,8 +61,11 @@ class Maze:
         self.pathMap = py_copy.deepcopy(self.mazeMap)
 	    #This map keeps a backup of original map
         self.originalMap = py_copy.deepcopy(self.mazeMap)
-    def writeMapToFile():
-        pass
+    
+#    def writeMapToFile(self,filename):
+#        for i in range(self.rows):
+#            for j in range(self.columns):
+#        pass
     
     def drawSelf(self, isnew):
         if (isnew == True):

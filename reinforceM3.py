@@ -83,14 +83,14 @@ def train_M3():
                 action = mathtool.eGreedyActionSelect(Qtable,state,NUM_ACT,Epsilon)
                 stepCount = 0
         
-                while (stepCount < MAX_STEP_EACH_EPISODE_M3 and state != [math.floor(MAX_ROW_M3/2),math.floor(MAX_COL_M3/2)]):
+                while (stepCount < MAX_STEP_EACH_EPISODE_M3 and learningAgent.pos != predator.pos):
                     #Qtable = updateQ_M3(Qtable,state,action,reward,stateNext,actionNext) #for regular sarsa
                     
                    if (SARSA_ET == True):
                         #agent and predator make decision simutaneously//predator moves first
-                        agentLastPos = learningAgent.pos 
+                        predator.move(predator.chase(learningAgent.pos),trainMaze)  
+#                       agentLastPos = learningAgent.pos 
                         learningAgent.move(action,trainMaze)
-                        predator.move(predator.chase(agentLastPos),trainMaze)  
                         
                         #Agent plan for next step
                         stateNext = stateMapping_M3(learningAgent.pos,predator.pos)#???Think about this
@@ -110,6 +110,30 @@ def train_M3():
                                     Etable[i][j][k] = GAMMA_M3 * LAMBDA_M3 * Etable[i][j][k]
                         state = stateNext
                         action = actionNext
+                   if (Q_ET == True):
+                        #agent and predator make decision simutaneously//predator moves first
+                        action = mathtool.eGreedyActionSelect(Qtable,state,NUM_ACT,Epsilon)
+                        agentLastPos = learningAgent.pos 
+                        learningAgent.move(action,trainMaze)
+                        predator.move(predator.chase(learningAgent.pos),trainMaze)  
+                        
+                        #Agent plan for next step
+                        stateNext = stateMapping_M3(learningAgent.pos,predator.pos)#???Think about this
+                        reward = calcReward_M3(stateNext)#???
+                        delta = reward + GAMMA_M3 * Qtable[stateNext[0]][stateNext[1]][(mathtool.optimalActionSelect(Qtable,stateNext,NUM_ACT))] - Qtable[state[0]][state[1]][action]
+                        Qtable[state[0]][state[1]][action] += Alpha * delta
+                         #Replacing traces
+#                        for i in range(NUM_ACT):
+#                            if (i == action):
+#                                Etable[state[0]][state[1]][i] += 1
+#                            else:
+#                                Etable[state[0]][state[1]][i] = 0
+#                        for i in range(MAX_ROW_M3):
+#                            for j in range(MAX_COL_M3):
+#                                for k in range(NUM_ACT):
+#                                    Qtable[i][j][k] = Qtable[i][j][k] + Alpha * delta * Etable[i][j][k]    
+#                                    Etable[i][j][k] = GAMMA_M3 * LAMBDA_M3 * Etable[i][j][k]
+                        state = stateNext
                    stepCount += 1
 
     print('M3 Training Complete')

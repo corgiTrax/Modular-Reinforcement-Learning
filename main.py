@@ -71,7 +71,8 @@ while (stepCount < MAX_STEP and (not Captured)):
 
     #Module Block #3: predator
     predatorModule = []
-    predatorModule.append(moduleClass.Module(QtableM3,reinforceM3.stateMapping_M3(myAgent.pos,predator.pos)))
+    if (predator.pos[0] - myAgent.pos[0] <= TEST_VRANGE_M3 and predator.pos[1] - myAgent.pos[1] <= TEST_VRANGE_M3):
+        predatorModule.append(moduleClass.Module(QtableM3,reinforceM3.stateMapping_M3(myAgent.pos,predator.pos)))
 
     #Combine all suggested action by their weight, determine global action
     allModules = []

@@ -91,9 +91,12 @@ class Predator:
         diffRow = -self.pos[ROW] + agentPos[ROW]
         diffCol = -self.pos[COL] + agentPos[COL]
 
+        if (random.random() > 1):
+            action = random.choice(range(NUM_ACT))
+            return action
         if (diffRow == 0 and diffCol == 0):
-            action = Stay
-        elif (diffCol == 0):
+            action = random.choice(range(NUM_ACT))
+        if (diffCol == 0):
             if (diffRow > 0):#agent is below the predator   
                 action = Down
             elif (diffRow < 0):#agent is above of the predator
@@ -114,8 +117,7 @@ class Predator:
                     action = Right
                 elif (diffCol < 0):#agent is on left of the predator
                     action = Left
-                
-
+     
         return action
 
 

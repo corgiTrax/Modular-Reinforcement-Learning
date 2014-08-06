@@ -9,16 +9,16 @@ import mathtool
 import pylab
 
 
-myMaze = world.Maze(rows = 9, columns = 9, mazeType = 'test')
-myMaze.drawSelf(isnew = True)
-myAgent = reinforceClass.Agent([4,2])
-myAgent.drawSelf(myMaze.window, True)
-predator = reinforceClass.Predator([7,6])
-predator.drawSelf(myMaze.window, True)
+#myMaze = world.Maze(rows = 4, columns = 4, mazeType = 'test')
+#myMaze.drawSelf(isnew = True)
+#myAgent = reinforceClass.Agent([2,2])
+#myAgent.drawSelf(myMaze.window, True)
+#predator = reinforceClass.Predator([1,1])
+#predator.drawSelf(myMaze.window, True)
 
-#QtableM1 = mathtool.readQFromFile('Q1_VRANGE_3Q.txt',"M1")
-#reinforceM1.printQtable_M1(QtableM1)
-#
+QtableM3 = mathtool.readQFromFile('Q3.txt',"M3")
+reinforceM3.printQtable_M3(QtableM3)
+
 #def queryQtable(Qtable,objRelPos):
 #    agentPos = [0,0]
 #    state = reinforceM1.stateMapping_M1(agentPos,objRelPos)

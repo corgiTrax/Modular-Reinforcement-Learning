@@ -88,7 +88,7 @@ def train_M3():
                     
                    if (SARSA_ET == True):
                         #agent and predator make decision simutaneously//predator moves first
-                        predator.move(predator.chase(learningAgent.pos),trainMaze)  
+                        predator.move(predator.chase(learningAgent.pos, 1.0),trainMaze)  
 #                       agentLastPos = learningAgent.pos 
                         learningAgent.move(action,trainMaze)
                         

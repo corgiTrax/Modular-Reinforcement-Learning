@@ -78,7 +78,7 @@ TEST_VRANGE_M1 = 9
 TEST_VRANGE_M2 = 9
 TEST_VRANGE_M3 = 3
 #ModuleClass.py, flag for decideAct function
-SOFTMAX_ACTION = False
+SOFTMAX_ACTION = True
 #ModuleClass.py, flags for vote function
 SUMQ = True
 VOTE = False
@@ -86,17 +86,29 @@ ONE_WINNER = False
 
 #Test maze
 #Obstacle and price probabilities
-pObstacle = 0.3
-pPrice = 0.4
+pObstacle = 0.0
+pPrice = 0.2
+#Probability of
+P_PREDATOR_CHASE = 0.0
+P_PREDATOR_RANDOM_ACT = 1 - P_PREDATOR_CHASE
 
 #Test Maze size
 TESTR = 9
 TESTC = 9
 MAX_STEP = 1000
 
+#test trial numbers
+MAX_TRIAL = 100
+DRAW = False
+MOUSE = False
+if (MAX_TRIAL == 1):
+    DRAW = True
+    MOUSE = True
+
+
 #Graphic visualization
 #Maze cell size in pixel, everything else depends on this
-CELL_SIZE = 20
+CELL_SIZE = 30
 
 
 

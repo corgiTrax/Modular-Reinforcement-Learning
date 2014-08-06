@@ -20,13 +20,16 @@ ROW = config.ROW
 COL = config.COL
 
 class Maze:
-    def __init__(self,rows,columns, mazeType, objPos = [0,0]):
+    def __init__(self,rows,columns, mazeType, objPos = [0,0], pPrice = config.pPrice, pObstacle = config.pObstacle):
         self.rows = py_copy.deepcopy(rows)
         self.columns = py_copy.deepcopy(columns)
         self.prices = []#stores positions of prices
+        self.originalNumPrices = 0
         self.obstacles = []#stores positions of obstacles
         self.objectPos = py_copy.deepcopy(objPos)
         self.targetPrice = None #Agent's current target price
+        self.pPrice = pPrice
+        self.pObstacle = pObstacle
  
         #represent maze map as a 2D array
         self.mazeMap = [[0 for x in range(columns)] for x in range(rows)]
@@ -48,11 +51,12 @@ class Maze:
 #                    if (i == 0 or j == 0 or i == self.rows - 1 or j == self.columns - 1):#place obstacles at edges
 #                        self.mazeMap[i][j] = Obstacle
 #                        self.obstacles.append([i,j])
-                    if (random.random() <= config.pPrice):
+                    if (random.random() <= self.pPrice):
                         self.mazeMap[i][j] = Price
                         self.prices.append([i,j])
+                        self.originalNumPrices += 1
                     #This is not exactly correct, pPrice and pObstacle should be indepedent
-                    elif (random.random() <= config.pObstacle):
+                    elif (random.random() <= self.pObstacle):
                         self.mazeMap[i][j] = Obstacle
                         self.obstacles.append([i,j])
         #if (mazeType == 'file'): #read map form a file

@@ -87,16 +87,16 @@ class Predator:
             self.agentPic.move(dx,dy)
     
     #Predator always tries to select action to approach agent
-    def chase(self, agentPos):
+    def chase(self, agentPos, pChase):
         diffRow = -self.pos[ROW] + agentPos[ROW]
         diffCol = -self.pos[COL] + agentPos[COL]
 
-        if (random.random() > 1):
+        if (random.random() > pChase):
             action = random.choice(range(NUM_ACT))
             return action
-        if (diffRow == 0 and diffCol == 0):
+        elif (diffRow == 0 and diffCol == 0):
             action = random.choice(range(NUM_ACT))
-        if (diffCol == 0):
+        elif (diffCol == 0):
             if (diffRow > 0):#agent is below the predator   
                 action = Down
             elif (diffRow < 0):#agent is above of the predator

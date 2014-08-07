@@ -80,9 +80,9 @@ TEST_VRANGE_M3 = 3
 #ModuleClass.py, flag for decideAct function
 SOFTMAX_ACTION = True
 #ModuleClass.py, flags for vote function
-SUMQ = True
+SUMQ = False
 VOTE = False
-ONE_WINNER = False
+ONE_WINNER = True
 
 #Test maze
 #Obstacle and price probabilities
@@ -98,7 +98,7 @@ TESTC = 9
 MAX_STEP = 1000
 
 #test trial numbers
-MAX_TRIAL = 100
+MAX_TRIAL = 300
 DRAW = False
 MOUSE = False
 if (MAX_TRIAL == 1):

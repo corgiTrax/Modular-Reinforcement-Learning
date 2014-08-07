@@ -37,11 +37,11 @@ class Agent:
         if (self.pos[1] >= maze.columns):self.pos[1] = maze.columns - 1;        
         if (self.pos[1] < 0):self.pos[1] = 0;
 
-    def drawSelf(self, window, isnew):
+    def drawSelf(self, window, isnew, color = 'red'):
         if (isnew == True):
             self.picCenter = graph.Point((self.pos[COL] + 0.5) * CELL_SIZE, (self.pos[ROW] + 0.5) * CELL_SIZE)
             self.agentPic = graph.Circle(self.picCenter, CELL_SIZE/4)
-            self.agentPic.setFill('red')
+            self.agentPic.setFill(color)
             self.agentPic.draw(window)
 #            #Draw two lines for obstacle detection vision range
 #            self.hvrange = graph.Line(graph.Point(self.picCenter.getX() - TEST_VRANGE_M2 * CELL_SIZE, self.picCenter.getY()), graph.Point(self.picCenter.getX() + TEST_VRANGE_M2 * CELL_SIZE, self.picCenter.getY()))
